@@ -2,7 +2,7 @@
 
 very alpha - kinda ready for use
 
-![image](https://github.com/Dschogo/vod-dl/assets/36862419/bd82dd2b-b44b-4cb8-bdaf-5d1fdb54f2d8)
+![image](https://github.com/Dschogo/vod-dl/assets/36862419/81a90ab5-e58b-45a2-84a5-3272fd42ade9)
 
 
 made with PyDracula - Modern GUI PySide6 / PyQt6
