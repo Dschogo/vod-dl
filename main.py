@@ -38,7 +38,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import extensions.twitch as twitch
 import extensions.http as thttp
 
-CLIENT_ID = "kd1unb4b3q4t58fwlpcbzcbnm76a8fp"
+CLIENT_ID = "um6i0x3u4m9j42plwlh0zck9kk0wzq"
 
 
 twitch_token = None
@@ -51,14 +51,23 @@ class MainWindow(QMainWindow):
             print(self.path)
 
             # set twitch token
-            if self.path.startswith("/?code="):
+            if self.path.startswith("/?access_token="):
                 twitch_token = self.path.split("=")[1].split("&")[0]
                 print(twitch_token)
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            self.wfile.write(bytes("<html><body><h1>You can close this window now</h1></   body></html>", "utf8"))
+            # const urlParams = new URLSearchParams(window.location.hash.substr(1));
+            # const accessToken = urlParams.get('access_token');
+            # console.log(accessToken);
+
+            self.wfile.write(
+                bytes(
+                    "<html><body><h1>You can close this window now</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:4973?access_token=' + accessToken} else {window.close()};;</script>",
+                    "utf-8",
+                )
+            )
             return
 
     def __init__(self):
@@ -71,6 +80,7 @@ class MainWindow(QMainWindow):
         global widgets
         widgets = self.ui
         self.videolist = []
+        self.clip_list = []
 
         # USE CUSTOM TITLE BAR | USE AS "False" FOR MAC OR LINUX
         # ///////////////////////////////////////////////////////////////
@@ -104,9 +114,14 @@ class MainWindow(QMainWindow):
         widgets.btn_widgets.clicked.connect(self.buttonClick)
         widgets.btn_new.clicked.connect(self.buttonClick)
         widgets.btn_save.clicked.connect(self.buttonClick)
-        widgets.pushButton_5.clicked.connect(self.donwload_video)
+        widgets.pushButton_5.clicked.connect(self.donwload_video_proxy)
 
         widgets.pushButton_2.clicked.connect(self.fetch_videos)
+        widgets.pushButton_3.clicked.connect(self.fetch_clips)
+
+        widgets.dateEdit.setDateTime(QDateTime.currentDateTime())
+        widgets.dateEdit_2.setDateTime(QDateTime.currentDateTime())
+        widgets.toggleLeftBox.hide()
 
         # EXTRA LEFT BOX
         def openCloseLeftBox():
@@ -125,7 +140,20 @@ class MainWindow(QMainWindow):
         widgets.btn_logout.hide()
         widgets.btn_message.hide()
 
+        widgets.btn_home.hide()
+        widgets.btn_widgets.hide()
+        widgets.btn_exit.hide()
+
         widgets.tableWidget_4.cellClicked.connect(self.video_selected)
+
+        widgets.tableWidget_5.cellClicked.connect(self.clip_selected)
+        widgets.lineEdit_4.textChanged.connect(self.clip_filter)
+
+        # set table column widths
+        widgets.tableWidget_5.setColumnWidth(2, 50)
+        widgets.tableWidget_5.setColumnWidth(3, 50)
+
+        widgets.pushButton_6.clicked.connect(self.download_clip_proxy)
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
@@ -151,7 +179,7 @@ class MainWindow(QMainWindow):
     def video_selected(self, row, col):
         # update timedit
         widgets.timeEdit_2.setTime(QTime(0, 0, 0))
-        length_in_s = widgets.tableWidget_4.item(row, 1).text()
+        length_in_s = widgets.tableWidget_4.item(row, 1).text().replace("s", "")
         hours = int(length_in_s) // 3600
         minutes = (int(length_in_s) - hours * 3600) // 60
         seconds = int(length_in_s) - hours * 3600 - minutes * 60
@@ -162,12 +190,19 @@ class MainWindow(QMainWindow):
         channel = widgets.lineEdit_2.text()
         vids = twitch.get_channel_videos(channel, limit=100, sort="time")["edges"]
         widgets.tableWidget_4.clearContents()
+        widgets.tableWidget_4.setRowCount(len(vids))
         for i in range(len(vids)):
             vid = vids[i]["node"]
             self.videolist.append(vid)
             widgets.tableWidget_4.setItem(i, 0, QTableWidgetItem(vid["createdAt"]))
-            widgets.tableWidget_4.setItem(i, 1, QTableWidgetItem(str(vid["lengthSeconds"])))
+            widgets.tableWidget_4.setItem(i, 1, QTableWidgetItem(str(vid["lengthSeconds"]) + "s"))
             widgets.tableWidget_4.setItem(i, 2, QTableWidgetItem(vid["title"]))
+
+    def donwload_video_proxy(self):
+        import threading
+
+        c = threading.Thread(target=self.donwload_video)
+        c.start()
 
     def donwload_video(self):
         # get selected video
@@ -181,9 +216,7 @@ class MainWindow(QMainWindow):
         print(video)
         access_token = twitch.get_access_token(video["id"], twitch_token)
         args = {"output": "{date}_{id}_{channel_login}_{title_slug}.{format}", "format": "mp4"}
-        target = twitch._video_target_filename(
-            video, args
-        )
+        target = twitch._video_target_filename(video, args)
 
         print("<dim>Fetching playlists...</dim>")
         playlists_m3u8 = twitch.get_playlists(video["id"], access_token)
@@ -229,7 +262,9 @@ class MainWindow(QMainWindow):
         playlist.dump(playlist_path)
 
         print("\n\nJoining files...")
+        set_progresstxt("Creating Video File...")
         twitch._join_vods(playlist_path, target, True, video)
+        set_progresstxt("Done")
 
     def logout(self):
         global twitch_token
@@ -247,7 +282,11 @@ class MainWindow(QMainWindow):
         login_thread.start()
         import webbrowser
 
-        webbrowser.open("https://id.twitch.tv/oauth2/authorize?client_id=" + CLIENT_ID + "&redirect_uri=http://localhost:4973&response_type=code&scope=channel:read:subscriptions")
+        webbrowser.open(
+            "https://id.twitch.tv/oauth2/authorize?client_id="
+            + CLIENT_ID
+            + "&redirect_uri=http://localhost:4973&response_type=token&scope=channel:read:subscriptions&force_verify=true"
+        )
         # wait for twitch login
         import time
 
@@ -257,7 +296,82 @@ class MainWindow(QMainWindow):
         widgets.btn_login.hide()
         widgets.btn_logout.show()
         print("closing server")
+        time.sleep(1)
         serv.shutdown()
+
+    def download_clip(self):
+        args = {"output": "{date}_{id}_{channel_login}_{title_slug}.{format}", "format": "mp4"}
+        # download all selected clips
+        to_download = []
+        for i in widgets.tableWidget_5.selectionModel().selectedRows():
+            to_download.append(self.clip_list[i.row()])
+
+        for i in range(len(to_download)):
+            widgets.labelprogress_2.setText(f"Downloading clip {i+1}/{len(to_download)}")
+
+            slug = to_download[i]["id"]
+
+            clip = twitch.get_clip(slug)
+
+            target = twitch._clip_target_filename(clip, args)
+            print("Target: <blue>{}</blue>".format(target))
+
+            url = twitch.get_clip_authenticated_url(slug, "source")
+            print("<dim>Selected URL: {}</dim>".format(url))
+
+            print("<dim>Downloading clip...</dim>")
+            twitch.download_file(url, target)
+
+            print("Downloaded: <blue>{}</blue>".format(target))
+
+    def download_clip_proxy(self):
+        import threading
+
+        c = threading.Thread(target=self.download_clip)
+        c.start()
+
+    def clip_filter(self):
+        # if line is empty, show all rows
+        if widgets.lineEdit_4.text() == "":
+            for i in range(widgets.tableWidget_5.rowCount()):
+                widgets.tableWidget_5.showRow(i)
+            return
+
+        for i in range(widgets.tableWidget_5.rowCount()):
+            widgets.tableWidget_5.hideRow(i)
+            for j in range(widgets.tableWidget_5.columnCount()):
+                if widgets.lineEdit_4.text() in widgets.tableWidget_5.item(i, j).text():
+                    widgets.tableWidget_5.showRow(i)
+                    break
+
+    def clip_selected(self):
+        # if selected column is 4, then find url from clip_list and open in browser
+        row = widgets.tableWidget_5.currentRow()
+        col = widgets.tableWidget_5.currentColumn()
+        if col == 4:
+            clip = self.clip_list[row]
+            print(clip)
+            import webbrowser
+
+            webbrowser.open(clip["url"])
+
+    def fetch_clips(self):
+        channel = widgets.lineEdit_3.text()
+        print(f"fetching clips from {channel}")
+
+        clips = twitch.get_clips_filtered(
+            channel_id=channel, limit=100, after=widgets.dateEdit.date(), before=widgets.dateEdit_2.date(), access_token=twitch_token, client_id=CLIENT_ID
+        )
+
+        widgets.tableWidget_5.clearContents()
+        widgets.tableWidget_5.setRowCount(len(clips))
+        for i in range(len(clips)):
+            self.clip_list.append(clips[i])
+            widgets.tableWidget_5.setItem(i, 0, QTableWidgetItem(clips[i]["created_at"]))
+            widgets.tableWidget_5.setItem(i, 1, QTableWidgetItem(clips[i]["creator_name"]))
+            widgets.tableWidget_5.setItem(i, 2, QTableWidgetItem(str(clips[i]["view_count"])))
+            widgets.tableWidget_5.setItem(i, 3, QTableWidgetItem(str(clips[i]["duration"]) + "s"))
+            widgets.tableWidget_5.setItem(i, 4, QTableWidgetItem(clips[i]["title"]))
 
     # BUTTONS CLICK
     # Post here your functions for clicked buttons
@@ -281,15 +395,19 @@ class MainWindow(QMainWindow):
 
         # SHOW NEW PAGE
         if btnName == "btn_new":
-            widgets.stackedWidget.setCurrentWidget(widgets.new_page)  # SET PAGE
+            widgets.stackedWidget.setCurrentWidget(widgets.vods)  # SET PAGE
             UIFunctions.resetStyle(self, btnName)  # RESET ANOTHERS BUTTONS SELECTED
             btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  # SELECT MENU
 
         if btnName == "btn_save":
-            print("Save BTN clicked!")
+            widgets.stackedWidget.setCurrentWidget(widgets.clips)
 
-        # PRINT BTN NAME
-        print(f'Button "{btnName}" pressed!')
+        # if btnName == "btn_save":
+        #     print("Save BTN clicked!")
+
+        # # PRINT BTN NAME
+        # print(f'Button "{btnName}" pressed!')
+        pass
 
     # RESIZE EVENTS
     # ///////////////////////////////////////////////////////////////
