@@ -16,6 +16,6 @@ Heavily based on twitch-dl (see twitch.py)
 
 # TODO
 - tidy up code - name buttons in qt
-- fancy up and polith the ui (length format, picker css)
+- fancy up and polish the ui (picker css)
 - create installer and make proper versioning
 - qol improvements
