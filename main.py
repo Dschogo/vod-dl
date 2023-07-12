@@ -82,6 +82,10 @@ class MainWindow(QMainWindow):
         self.videolist = []
         self.clip_list = []
 
+        self.settings = QSettings("settings.ini", QSettings.IniFormat)
+        self.folder = self.settings.value("folder", os.getcwd())
+        print(self.folder)
+
         # USE CUSTOM TITLE BAR | USE AS "False" FOR MAC OR LINUX
         # ///////////////////////////////////////////////////////////////
         Settings.ENABLE_CUSTOM_TITLE_BAR = True
@@ -138,10 +142,10 @@ class MainWindow(QMainWindow):
         widgets.btn_login.clicked.connect(self.login)
         widgets.btn_logout.clicked.connect(self.logout)
         widgets.btn_logout.hide()
-        widgets.btn_message.hide()
+        widgets.btn_message.clicked.connect(self.set_output)
 
         widgets.btn_home.hide()
-        widgets.btn_widgets.hide()
+        widgets.btn_save.hide()
         widgets.btn_exit.hide()
 
         widgets.tableWidget_4.cellClicked.connect(self.video_selected)
@@ -175,6 +179,15 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         widgets.stackedWidget.setCurrentWidget(widgets.home)
         widgets.btn_home.setStyleSheet(UIFunctions.selectMenu(widgets.btn_home.styleSheet()))
+
+    def set_output(self):
+        # filpicker for folder
+        self.folder = QFileDialog.getExistingDirectory(self, "Select Directory")
+
+        # save to settings file
+        self.settings.setValue("folder", self.folder)
+
+
 
     def video_selected(self, row, col):
         # update timedit
@@ -229,7 +242,7 @@ class MainWindow(QMainWindow):
         playlist = m3u8.loads(response.text)
 
         base_uri = re.sub("/[^/]+$", "/", playlist_uri)
-        target_dir = twitch._crete_temp_dir(base_uri)
+        target_dir = twitch._crete_temp_dir(base_uri, self.folder)
         vod_paths = twitch._get_vod_paths(playlist, start_sec, end_sec)
 
         # Save playlists for debugging purposes
@@ -314,6 +327,7 @@ class MainWindow(QMainWindow):
             clip = twitch.get_clip(slug)
 
             target = twitch._clip_target_filename(clip, args)
+            target = os.path.join(self.folder, target)
             print("Target: <blue>{}</blue>".format(target))
 
             url = twitch.get_clip_authenticated_url(slug, "source")
@@ -389,7 +403,7 @@ class MainWindow(QMainWindow):
 
         # SHOW WIDGETS PAGE
         if btnName == "btn_widgets":
-            widgets.stackedWidget.setCurrentWidget(widgets.widgets)
+            widgets.stackedWidget.setCurrentWidget(widgets.clips)
             UIFunctions.resetStyle(self, btnName)
             btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
 
@@ -399,8 +413,10 @@ class MainWindow(QMainWindow):
             UIFunctions.resetStyle(self, btnName)  # RESET ANOTHERS BUTTONS SELECTED
             btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  # SELECT MENU
 
-        if btnName == "btn_save":
-            widgets.stackedWidget.setCurrentWidget(widgets.clips)
+        # if btnName == "btn_save":
+        #     widgets.stackedWidget.setCurrentWidget(widgets.widgets)
+        #     UIFunctions.resetStyle(self, btnName)  # RESET ANOTHERS BUTTONS SELECTED
+        #     btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  # SELECT MENU
 
         # if btnName == "btn_save":
         #     print("Save BTN clicked!")

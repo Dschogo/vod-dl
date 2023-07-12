@@ -202,15 +202,15 @@ def _download(url: str, path: str):
     return size
 
 
-def download_file(url: str, path: str, retries: int = RETRY_COUNT):
-    if os.path.exists(path):
+def download_file(url: str, path_o: str, retries: int = RETRY_COUNT):
+    if os.path.exists(path_o):
         from_disk = True
-        return (os.path.getsize(path), from_disk)
+        return (os.path.getsize(path_o), from_disk)
 
     from_disk = False
     for _ in range(retries):
         try:
-            return (_download(url, path), from_disk)
+            return (_download(url, path_o), from_disk)
         except httpx.RequestError:
             pass
 
@@ -302,10 +302,10 @@ def _get_vod_paths(playlist, start: Optional[int], end: Optional[int]) -> List[s
     return files
 
 
-def _crete_temp_dir(base_uri: str) -> str:
+def _crete_temp_dir(base_uri: str, root_output) -> str:
     """Create a temp dir to store downloads if it doesn't exist."""
     path = urlparse(base_uri).path.lstrip("/")
-    temp_dir = Path(os.getcwd(), "twitch-dl", path)
+    temp_dir = Path(root_output, "twitch-dl", path)
     temp_dir.mkdir(parents=True, exist_ok=True)
     return str(temp_dir)
 

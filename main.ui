@@ -905,10 +905,10 @@ Button */
                    <enum>Qt::LeftToRight</enum>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">background-image: url(:/icons/images/icons/cil-gamepad.png);</string>
+                   <string notr="true">background-image: url(:/icons/images/icons/cil-paperclip.png);</string>
                   </property>
                   <property name="text">
-                   <string>Widgets</string>
+                   <string>Clips</string>
                   </property>
                  </widget>
                 </item>
@@ -941,7 +941,7 @@ Button */
                    <enum>Qt::LeftToRight</enum>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">background-image: url(:/icons/images/icons/cil-file.png);</string>
+                   <string notr="true">background-image: url(:/icons/images/icons/cil-movie.png);</string>
                   </property>
                   <property name="text">
                    <string>Vods</string>
@@ -2144,7 +2144,7 @@ border-image: url(:/images/images/images/Dschogo.png) 0 0 0 0 stretch stretch;
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>294</width>
+                                   <width>218</width>
                                    <height>218</height>
                                   </rect>
                                  </property>
@@ -4081,10 +4081,10 @@ border-image: url(:/images/images/images/Dschogo.png) 0 0 0 0 stretch stretch;
                             <enum>Qt::LeftToRight</enum>
                            </property>
                            <property name="styleSheet">
-                            <string notr="true">background-image: url(:/icons/images/icons/cil-envelope-open.png);</string>
+                            <string notr="true">background-image: url(:/icons/images/icons/cil-data-transfer-down.png)</string>
                            </property>
                            <property name="text">
-                            <string>Message</string>
+                            <string>Output folder</string>
                            </property>
                           </widget>
                          </item>

@@ -672,7 +672,7 @@ class Ui_MainWindow(object):
         self.btn_widgets.setFont(font)
         self.btn_widgets.setCursor(QCursor(Qt.PointingHandCursor))
         self.btn_widgets.setLayoutDirection(Qt.LeftToRight)
-        self.btn_widgets.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-gamepad.png);")
+        self.btn_widgets.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-paperclip.png);")
 
         self.verticalLayout_8.addWidget(self.btn_widgets)
 
@@ -684,7 +684,7 @@ class Ui_MainWindow(object):
         self.btn_new.setFont(font)
         self.btn_new.setCursor(QCursor(Qt.PointingHandCursor))
         self.btn_new.setLayoutDirection(Qt.LeftToRight)
-        self.btn_new.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-file.png);")
+        self.btn_new.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-movie.png);")
 
         self.verticalLayout_8.addWidget(self.btn_new)
 
@@ -1162,7 +1162,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 294, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1887,7 +1887,7 @@ class Ui_MainWindow(object):
         self.btn_message.setFont(font)
         self.btn_message.setCursor(QCursor(Qt.PointingHandCursor))
         self.btn_message.setLayoutDirection(Qt.LeftToRight)
-        self.btn_message.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-envelope-open.png);")
+        self.btn_message.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-data-transfer-down.png)")
 
         self.verticalLayout_14.addWidget(self.btn_message)
 
@@ -1991,7 +1991,7 @@ class Ui_MainWindow(object):
         self.titleLeftDescription.setText(QCoreApplication.translate("MainWindow", u"Buggey as hell", None))
         self.toggleButton.setText(QCoreApplication.translate("MainWindow", u"Hide", None))
         self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Home", None))
-        self.btn_widgets.setText(QCoreApplication.translate("MainWindow", u"Widgets", None))
+        self.btn_widgets.setText(QCoreApplication.translate("MainWindow", u"Clips", None))
         self.btn_new.setText(QCoreApplication.translate("MainWindow", u"Vods", None))
         self.btn_save.setText(QCoreApplication.translate("MainWindow", u"Clips", None))
         self.btn_exit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
@@ -2161,7 +2161,7 @@ class Ui_MainWindow(object):
         self.labelprogress_2.setText("")
         self.labelprogress_3.setText("")
         self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"DONWLOAD", None))
-        self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Message", None))
+        self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Output folder", None))
         self.btn_login.setText(QCoreApplication.translate("MainWindow", u"Login", None))
         self.btn_logout.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
         self.creditsLabel.setText(QCoreApplication.translate("MainWindow", u"By: Dschogo                     PySide6 Template by Wanderson M. Pimenta", None))
