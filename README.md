@@ -20,5 +20,6 @@ Heavily based on twitch-dl (see twitch.py)
 - create installer and make proper versioning
 - qol improvements
 - fix the hard 100 clip cap per day (only teh first 100 clips per day are fetched - needs smart way to check that and fetch rest)
+- thumbnails (grid ui?)
 
 it *should* work with sub only vods, didn't test 
