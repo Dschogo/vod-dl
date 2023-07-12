@@ -22,6 +22,8 @@ import m3u8
 import re
 import asyncio
 from typing import List, Optional, OrderedDict
+import threading
+import webbrowser
 
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -93,10 +95,12 @@ class MainWindow(QMainWindow):
         # APP NAME
         # ///////////////////////////////////////////////////////////////
         title = "Vod-dl"
-        description = "Vod-dl Alpha 0.1"
+        description = "Vod-dl Alpha"
+        version = "0.1.1"
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
+        widgets.version.setText(version)
 
         # TOGGLE MENU
         # ///////////////////////////////////////////////////////////////
@@ -149,6 +153,7 @@ class MainWindow(QMainWindow):
         widgets.btn_exit.hide()
 
         widgets.tableWidget_4.cellClicked.connect(self.video_selected)
+        widgets.pushButton_7.clicked.connect(self.preview_video)
 
         widgets.tableWidget_5.cellClicked.connect(self.clip_selected)
         widgets.lineEdit_4.textChanged.connect(self.clip_filter)
@@ -187,16 +192,22 @@ class MainWindow(QMainWindow):
         # save to settings file
         self.settings.setValue("folder", self.folder)
 
-
-
     def video_selected(self, row, col):
         # update timedit
         widgets.timeEdit_2.setTime(QTime(0, 0, 0))
-        length_in_s = widgets.tableWidget_4.item(row, 1).text().replace("s", "")
-        hours = int(length_in_s) // 3600
-        minutes = (int(length_in_s) - hours * 3600) // 60
-        seconds = int(length_in_s) - hours * 3600 - minutes * 60
-        widgets.timeEdit.setTime(QTime(hours, minutes, seconds))
+        hours, minutes, seconds = widgets.tableWidget_4.item(row, 1).text().split(":")
+        widgets.timeEdit.setTime(QTime(int(hours), int(minutes), int(seconds)))
+
+    def preview_video(self):
+        # get selected video
+        row = widgets.tableWidget_4.currentRow()
+        vid = self.videolist[row]
+        # get start time
+        hours, minutes, seconds = widgets.timeEdit_2.time().toString().split(":")
+
+        # open video in browser
+        webbrowser.open(f"https://www.twitch.tv/videos/{vid['id']}?t={hours}h{minutes}m{seconds}s")
+
 
     def fetch_videos(self):
         # demo fill table
@@ -207,8 +218,11 @@ class MainWindow(QMainWindow):
         for i in range(len(vids)):
             vid = vids[i]["node"]
             self.videolist.append(vid)
+            h = int(vid["lengthSeconds"]) // 3600
+            m = (int(vid["lengthSeconds"]) - h * 3600) // 60
+            s = int(vid["lengthSeconds"]) - h * 3600 - m * 60
             widgets.tableWidget_4.setItem(i, 0, QTableWidgetItem(vid["createdAt"]))
-            widgets.tableWidget_4.setItem(i, 1, QTableWidgetItem(str(vid["lengthSeconds"]) + "s"))
+            widgets.tableWidget_4.setItem(i, 1, QTableWidgetItem(f"{h}:{m}:{s}"))
             widgets.tableWidget_4.setItem(i, 2, QTableWidgetItem(vid["title"]))
 
     def donwload_video_proxy(self):
@@ -289,11 +303,9 @@ class MainWindow(QMainWindow):
         global twitch_token
 
         serv = HTTPServer(("localhost", 4973), self.Server)
-        import threading
 
         login_thread = threading.Thread(target=serv.serve_forever)
         login_thread.start()
-        import webbrowser
 
         webbrowser.open(
             "https://id.twitch.tv/oauth2/authorize?client_id="

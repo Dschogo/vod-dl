@@ -1870,7 +1870,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                         <string notr="true">background: transparent;</string>
                        </property>
                        <property name="currentIndex">
-                        <number>3</number>
+                        <number>2</number>
                        </property>
                        <widget class="QWidget" name="home">
                         <property name="autoFillBackground">
@@ -3240,6 +3240,37 @@ border-image: url(:/images/images/images/Dschogo.png) 0 0 0 0 stretch stretch;
                             <widget class="QTimeEdit" name="timeEdit">
                              <property name="displayFormat">
                               <string>HH:mm:ss</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_7">
+                             <property name="minimumSize">
+                              <size>
+                               <width>150</width>
+                               <height>30</height>
+                              </size>
+                             </property>
+                             <property name="font">
+                              <font>
+                               <family>Segoe UI</family>
+                               <pointsize>10</pointsize>
+                               <italic>false</italic>
+                               <bold>false</bold>
+                              </font>
+                             </property>
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color: rgb(52, 59, 72);</string>
+                             </property>
+                             <property name="text">
+                              <string>preview</string>
+                             </property>
+                             <property name="icon">
+                              <iconset resource="resources.qrc">
+                               <normaloff>:/icons/images/icons/cil-media-play.png</normaloff>:/icons/images/icons/cil-media-play.png</iconset>
                              </property>
                             </widget>
                            </item>

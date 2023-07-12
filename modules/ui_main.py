@@ -1569,15 +1569,27 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_7.addWidget(self.timeEdit)
 
+        self.pushButton_7 = QPushButton(self.vods)
+        self.pushButton_7.setObjectName(u"pushButton_7")
+        self.pushButton_7.setMinimumSize(QSize(150, 30))
+        self.pushButton_7.setFont(font)
+        self.pushButton_7.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pushButton_7.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        icon6 = QIcon()
+        icon6.addFile(u":/icons/images/icons/cil-media-play.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.pushButton_7.setIcon(icon6)
+
+        self.horizontalLayout_7.addWidget(self.pushButton_7)
+
         self.pushButton_5 = QPushButton(self.vods)
         self.pushButton_5.setObjectName(u"pushButton_5")
         self.pushButton_5.setMinimumSize(QSize(150, 30))
         self.pushButton_5.setFont(font)
         self.pushButton_5.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton_5.setStyleSheet(u"background-color: rgb(52, 59, 72);")
-        icon6 = QIcon()
-        icon6.addFile(u":/icons/images/icons/cil-caret-bottom.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.pushButton_5.setIcon(icon6)
+        icon7 = QIcon()
+        icon7.addFile(u":/icons/images/icons/cil-caret-bottom.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.pushButton_5.setIcon(icon7)
 
         self.horizontalLayout_7.addWidget(self.pushButton_5)
 
@@ -1825,7 +1837,7 @@ class Ui_MainWindow(object):
         self.pushButton_6.setFont(font)
         self.pushButton_6.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton_6.setStyleSheet(u"background-color: rgb(52, 59, 72);")
-        self.pushButton_6.setIcon(icon6)
+        self.pushButton_6.setIcon(icon7)
 
         self.verticalLayout_15.addWidget(self.pushButton_6)
 
@@ -1979,7 +1991,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -2130,6 +2142,7 @@ class Ui_MainWindow(object):
 
         self.timeEdit_2.setDisplayFormat(QCoreApplication.translate("MainWindow", u"HH:mm:ss", None))
         self.timeEdit.setDisplayFormat(QCoreApplication.translate("MainWindow", u"HH:mm:ss", None))
+        self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"preview", None))
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"DONWLOAD", None))
         self.labelprogress.setText("")
         self.labelBoxBlenderInstalation_3.setText(QCoreApplication.translate("MainWindow", u"Download Clips", None))
