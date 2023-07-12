@@ -6,3 +6,7 @@ very alpha - kinda ready for use
 
 
 made with PyDracula - Modern GUI PySide6 / PyQt6
+
+
+# TODO
+- tidy up code - name buttons in qt
