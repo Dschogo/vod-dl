@@ -19,3 +19,5 @@ Heavily based on twitch-dl (see twitch.py)
 - fancy up and polish the ui (picker css)
 - create installer and make proper versioning
 - qol improvements
+
+it *should* work with sub only vods, didn't test 
