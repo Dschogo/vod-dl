@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         title = "Vod-dl"
         description = "Vod-dl Alpha"
-        version = "0.1.1"
+        version = "0.1.2"
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
@@ -385,9 +385,8 @@ class MainWindow(QMainWindow):
         channel = widgets.lineEdit_3.text()
         print(f"fetching clips from {channel}")
 
-        clips = twitch.get_clips_filtered(
-            channel_id=channel, limit=100, after=widgets.dateEdit.date(), before=widgets.dateEdit_2.date(), access_token=twitch_token, client_id=CLIENT_ID
-        )
+        clips = twitch.get_clips_filtered(channel_id=channel, after=widgets.dateEdit.date(), before=widgets.dateEdit_2.date(), access_token=twitch_token, client_id=CLIENT_ID)
+
 
         widgets.tableWidget_5.clearContents()
         widgets.tableWidget_5.setRowCount(len(clips))

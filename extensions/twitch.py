@@ -463,7 +463,7 @@ def authenticated_post(url, data=None, json=None, headers={}):
     return response
 
 
-def get_clips_filtered(channel_id, limit, after, before, client_id, access_token):
+def get_clips_filtered(channel_id, after, before, client_id, access_token, limit=100):
     user = requests.get("https://api.twitch.tv/helix/users?login=" + channel_id, headers={"Client-ID": client_id, "authorization": "Bearer " + access_token}).json()
 
     # iter over all days
@@ -475,9 +475,8 @@ def get_clips_filtered(channel_id, limit, after, before, client_id, access_token
 
     clips = []
 
-    for i in range(delta.days + 1):
-        day = d0 + timedelta(days=i)
-        c = requests.get(
+    def getter(cursor=None):
+        return requests.get(
             "https://api.twitch.tv/helix/clips?broadcaster_id="
             + user["data"][0]["id"]
             + "&first="
@@ -487,11 +486,26 @@ def get_clips_filtered(channel_id, limit, after, before, client_id, access_token
             + "T00:00:00Z"
             + "&ended_at="
             + str(day)
-            + "T23:59:59Z",
+            + "T23:59:59Z"
+            + str("&after=" + cursor if cursor else ""),
             headers={"Client-ID": client_id, "Authorization": "Bearer " + access_token},
         ).json()
+
+    for i in range(delta.days + 1):
+        day = d0 + timedelta(days=i)
+        c = getter()
+
         for x in c["data"]:
             clips.append(x)
+
+        # if pagination is needed, recursively call the next pages
+        if "pagination" in c:
+            while c["pagination"]:
+                print("pagination" + str(c["pagination"]["cursor"]))
+                c = getter(c["pagination"]["cursor"])
+
+                for x in c["data"]:
+                    clips.append(x)
     return clips
 
 

@@ -5,10 +5,9 @@ venv/
 twitch-dl/
 build/
 dist/
-tmp.txt
 test.py
 resources.qrc
 main_org.ui
 output/
 settings.ini
-tmp.txt
+temp.txt
