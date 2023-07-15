@@ -24,6 +24,7 @@ import asyncio
 from typing import List, Optional, OrderedDict
 import threading
 import webbrowser
+import time
 
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -44,7 +45,6 @@ CLIENT_ID = "um6i0x3u4m9j42plwlh0zck9kk0wzq"
 
 
 twitch_token = None
-
 
 class MainWindow(QMainWindow):
     class Server(BaseHTTPRequestHandler):
@@ -313,14 +313,14 @@ class MainWindow(QMainWindow):
             + "&redirect_uri=http://localhost:4973&response_type=token&scope=channel:read:subscriptions&force_verify=true"
         )
         # wait for twitch login
-        import time
+        
 
         while twitch_token is None:
-            print("waiting for twitch login")
+            #print("waiting for twitch login")
             time.sleep(1)
         widgets.btn_login.hide()
         widgets.btn_logout.show()
-        print("closing server")
+        #print("closing server")
         time.sleep(1)
         serv.shutdown()
 
