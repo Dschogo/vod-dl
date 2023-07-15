@@ -470,9 +470,6 @@ def get_clips_filtered(channel_id, after, before, client_id, access_token, limit
 
     d0 = date(after.year(), after.month(), after.day())
     d1 = date(before.year(), before.month(), before.day())
-
-    delta = d1 - d0
-
     clips = []
 
     def getter(cursor=None):
@@ -482,30 +479,28 @@ def get_clips_filtered(channel_id, after, before, client_id, access_token, limit
             + "&first="
             + str(limit)
             + "&started_at="
-            + str(day)
+            + str(d0)
             + "T00:00:00Z"
             + "&ended_at="
-            + str(day)
+            + str(d1)
             + "T23:59:59Z"
             + str("&after=" + cursor if cursor else ""),
             headers={"Client-ID": client_id, "Authorization": "Bearer " + access_token},
         ).json()
 
-    for i in range(delta.days + 1):
-        day = d0 + timedelta(days=i)
-        c = getter()
+    c = getter()
 
-        for x in c["data"]:
-            clips.append(x)
+    for x in c["data"]:
+        clips.append(x)
 
-        # if pagination is needed, recursively call the next pages
-        if "pagination" in c:
-            while c["pagination"]:
-                print("pagination" + str(c["pagination"]["cursor"]))
-                c = getter(c["pagination"]["cursor"])
+    # if pagination is needed, recursively call the next pages
+    if "pagination" in c:
+        while c["pagination"]:
+            print("pagination" + str(c["pagination"]["cursor"]))
+            c = getter(c["pagination"]["cursor"])
 
-                for x in c["data"]:
-                    clips.append(x)
+            for x in c["data"]:
+                clips.append(x)
     return clips
 
 

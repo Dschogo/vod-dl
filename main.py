@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
             self.send_header("Content-type", "text/html")
             self.end_headers()
             if self.path.startswith("/?access_token="):
+                print("got token")
                 twitch_token = self.path.split("=")[1].split("&")[0]
                 self.wfile.write(
                     bytes(
@@ -71,7 +72,7 @@ class MainWindow(QMainWindow):
 
                 self.wfile.write(
                     bytes(
-                        "<html><body><h1>hiding token</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:4973?access_token=' + accessToken} else {window.close()};;</script>",
+                        "<html><body><h1>You can close this window now</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:4973?access_token=' + accessToken} else {window.close()};;</script>",
                         "utf-8",
                     )
                 )
