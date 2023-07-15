@@ -14,7 +14,6 @@ from PySide6.QtWidgets import *
 
 from . resources_rc import *
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -1040,7 +1039,7 @@ class Ui_MainWindow(object):
         self.home.setAutoFillBackground(False)
         self.home.setStyleSheet(u"background-position: center;\n"
 "background-repeat: no-repeat;\n"
-"border-image: url(:/images/images/images/Dschogo.png) 0 0 0 0 stretch stretch;\n"
+"border-image: url(:/images/images/images/Dschogo.png);\n"
 "")
         self.stackedWidget.addWidget(self.home)
         self.widgets = QWidget()
@@ -1163,7 +1162,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 292, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1778,7 +1777,7 @@ class Ui_MainWindow(object):
         self.tableWidget_5.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.tableWidget_5.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.tableWidget_5.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tableWidget_5.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.tableWidget_5.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.tableWidget_5.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget_5.setShowGrid(True)
         self.tableWidget_5.setGridStyle(Qt.SolidLine)
@@ -1992,7 +1991,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

@@ -25,6 +25,7 @@ from typing import List, Optional, OrderedDict
 import threading
 import webbrowser
 import time
+import shutil
 
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -46,6 +47,7 @@ CLIENT_ID = "um6i0x3u4m9j42plwlh0zck9kk0wzq"
 
 twitch_token = None
 
+
 class MainWindow(QMainWindow):
     class Server(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -65,7 +67,6 @@ class MainWindow(QMainWindow):
                 )
 
             else:
-                
                 # const urlParams = new URLSearchParams(window.location.hash.substr(1));
                 # const accessToken = urlParams.get('access_token');
                 # console.log(accessToken);
@@ -77,7 +78,7 @@ class MainWindow(QMainWindow):
                     )
                 )
             return
-        
+
         def log_message(self, format, *args):
             return
 
@@ -216,7 +217,6 @@ class MainWindow(QMainWindow):
         # open video in browser
         webbrowser.open(f"https://www.twitch.tv/videos/{vid['id']}?t={hours}h{minutes}m{seconds}s")
 
-
     def fetch_videos(self):
         # demo fill table
         channel = widgets.lineEdit_2.text()
@@ -298,7 +298,11 @@ class MainWindow(QMainWindow):
 
         print("\n\nJoining files...")
         set_progresstxt("Creating Video File...")
-        twitch._join_vods(playlist_path, target, True, video)
+        print(target)
+        print(target_dir)
+        twitch._join_vods(playlist_path, os.path.join(self.folder, target), True, video)
+        # delete temp folder - target_dir two levels up
+        shutil.rmtree(os.path.dirname(os.path.dirname(target_dir)))
         set_progresstxt("Done")
 
     def logout(self):
@@ -322,7 +326,6 @@ class MainWindow(QMainWindow):
             + "&redirect_uri=http://localhost:4973&response_type=token&scope=channel:read:subscriptions&force_verify=true"
         )
         # wait for twitch login
-        
 
         while twitch_token is None:
             print("waiting for twitch login")
@@ -396,7 +399,6 @@ class MainWindow(QMainWindow):
 
         clips = twitch.get_clips_filtered(channel_id=channel, after=widgets.dateEdit.date(), before=widgets.dateEdit_2.date(), access_token=twitch_token, client_id=CLIENT_ID)
 
-
         widgets.tableWidget_5.clearContents()
         widgets.tableWidget_5.setRowCount(len(clips))
         for i in range(len(clips)):
@@ -456,8 +458,7 @@ class MainWindow(QMainWindow):
     def mousePressEvent(self, event):
         # SET DRAG POS WINDOW
         self.dragPos = event.globalPosition().toPoint()
-        
-        
+
         # PRINT MOUSE EVENTS
         # if event.buttons() == Qt.LeftButton:
         #     print("Mouse click: LEFT CLICK")

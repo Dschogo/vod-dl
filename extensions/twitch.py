@@ -496,7 +496,7 @@ def get_clips_filtered(channel_id, after, before, client_id, access_token, limit
     # if pagination is needed, recursively call the next pages
     if "pagination" in c:
         while c["pagination"]:
-            print("pagination" + str(c["pagination"]["cursor"]))
+            print("pagination   " + str(c["pagination"]["cursor"]))
             c = getter(c["pagination"]["cursor"])
 
             for x in c["data"]:
