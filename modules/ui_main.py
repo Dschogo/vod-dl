@@ -14,6 +14,7 @@ from PySide6.QtWidgets import *
 
 from . resources_rc import *
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -548,10 +549,10 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "")
-        self.horizontalLayout_15 = QHBoxLayout(self.styleSheet)
-        self.horizontalLayout_15.setSpacing(0)
-        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
-        self.horizontalLayout_15.setContentsMargins(10, 10, 10, 10)
+        self.appMargins = QHBoxLayout(self.styleSheet)
+        self.appMargins.setSpacing(0)
+        self.appMargins.setObjectName(u"appMargins")
+        self.appMargins.setContentsMargins(10, 10, 10, 10)
         self.bgApp = QFrame(self.styleSheet)
         self.bgApp.setObjectName(u"bgApp")
         self.bgApp.setStyleSheet(u"")
@@ -1985,7 +1986,7 @@ class Ui_MainWindow(object):
         self.appLayout.addWidget(self.contentBox)
 
 
-        self.horizontalLayout_15.addWidget(self.bgApp)
+        self.appMargins.addWidget(self.bgApp)
 
         MainWindow.setCentralWidget(self.styleSheet)
 

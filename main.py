@@ -50,26 +50,34 @@ class MainWindow(QMainWindow):
     class Server(BaseHTTPRequestHandler):
         def do_GET(self):
             global twitch_token, widgets
-            print(self.path)
-
             # set twitch token
-            if self.path.startswith("/?access_token="):
-                twitch_token = self.path.split("=")[1].split("&")[0]
-                print(twitch_token)
-
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            # const urlParams = new URLSearchParams(window.location.hash.substr(1));
-            # const accessToken = urlParams.get('access_token');
-            # console.log(accessToken);
-
-            self.wfile.write(
-                bytes(
-                    "<html><body><h1>You can close this window now</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:4973?access_token=' + accessToken} else {window.close()};;</script>",
-                    "utf-8",
+            if self.path.startswith("/?access_token="):
+                twitch_token = self.path.split("=")[1].split("&")[0]
+                self.wfile.write(
+                    bytes(
+                        "<html><body><h1>You can close this window now</h1></   body></html><script>window.location.href = 'http://localhost:4973'</script>",
+                        "utf-8",
+                    )
                 )
-            )
+
+            else:
+                
+                # const urlParams = new URLSearchParams(window.location.hash.substr(1));
+                # const accessToken = urlParams.get('access_token');
+                # console.log(accessToken);
+
+                self.wfile.write(
+                    bytes(
+                        "<html><body><h1>hiding token</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:4973?access_token=' + accessToken} else {window.close()};;</script>",
+                        "utf-8",
+                    )
+                )
+            return
+        
+        def log_message(self, format, *args):
             return
 
     def __init__(self):
@@ -86,7 +94,6 @@ class MainWindow(QMainWindow):
 
         self.settings = QSettings("settings.ini", QSettings.IniFormat)
         self.folder = self.settings.value("folder", os.getcwd())
-        print(self.folder)
 
         # USE CUSTOM TITLE BAR | USE AS "False" FOR MAC OR LINUX
         # ///////////////////////////////////////////////////////////////
@@ -305,6 +312,7 @@ class MainWindow(QMainWindow):
         serv = HTTPServer(("localhost", 4973), self.Server)
 
         login_thread = threading.Thread(target=serv.serve_forever)
+
         login_thread.start()
 
         webbrowser.open(
@@ -316,11 +324,11 @@ class MainWindow(QMainWindow):
         
 
         while twitch_token is None:
-            #print("waiting for twitch login")
+            print("waiting for twitch login")
             time.sleep(1)
         widgets.btn_login.hide()
         widgets.btn_logout.show()
-        #print("closing server")
+        print("closing server")
         time.sleep(1)
         serv.shutdown()
 
@@ -446,13 +454,14 @@ class MainWindow(QMainWindow):
     # ///////////////////////////////////////////////////////////////
     def mousePressEvent(self, event):
         # SET DRAG POS WINDOW
-        self.dragPos = event.globalPos()
-
+        self.dragPos = event.globalPosition().toPoint()
+        
+        
         # PRINT MOUSE EVENTS
-        if event.buttons() == Qt.LeftButton:
-            print("Mouse click: LEFT CLICK")
-        if event.buttons() == Qt.RightButton:
-            print("Mouse click: RIGHT CLICK")
+        # if event.buttons() == Qt.LeftButton:
+        #     print("Mouse click: LEFT CLICK")
+        # if event.buttons() == Qt.RightButton:
+        #     print("Mouse click: RIGHT CLICK")
 
     # on exit
     # ///////////////////////////////////////////////////////////////
@@ -465,4 +474,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("icon.ico"))
     window = MainWindow()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
