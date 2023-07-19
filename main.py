@@ -365,6 +365,8 @@ class MainWindow(QMainWindow):
 
             print("Downloaded: <blue>{}</blue>".format(target))
 
+        widgets.labelprogress_2.setText("Done")
+
     def download_clip_proxy(self):
         import threading
 
@@ -393,7 +395,6 @@ class MainWindow(QMainWindow):
             # get url from column 5
             print(widgets.tableWidget_5.item(row, 5).text())
             clip_url = json.loads(widgets.tableWidget_5.item(row, 5).text())["url"]
-            
 
             webbrowser.open(clip_url)
 
