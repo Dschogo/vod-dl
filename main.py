@@ -16,7 +16,6 @@
 
 import sys
 import os
-import platform
 import httpx
 import m3u8
 import re
@@ -26,6 +25,8 @@ import threading
 import webbrowser
 import time
 import shutil
+import json
+import webbrowser
 
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -92,7 +93,6 @@ class MainWindow(QMainWindow):
         global widgets
         widgets = self.ui
         self.videolist = []
-        self.clip_list = []
 
         self.settings = QSettings("settings.ini", QSettings.IniFormat)
         self.folder = self.settings.value("folder", os.getcwd())
@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         title = "Vod-dl"
         description = "Vod-dl Alpha"
-        version = "0.1.2"
+        version = "0.1.3"
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
@@ -341,12 +341,15 @@ class MainWindow(QMainWindow):
         # download all selected clips
         to_download = []
         for i in widgets.tableWidget_5.selectionModel().selectedRows():
-            to_download.append(self.clip_list[i.row()])
+            # url from column 5
+            # if row hidden dont
+            if not widgets.tableWidget_5.isRowHidden(i.row()):
+                to_download.append(json.loads(widgets.tableWidget_5.item(i.row(), 5).text()))
 
         for i in range(len(to_download)):
             widgets.labelprogress_2.setText(f"Downloading clip {i+1}/{len(to_download)}")
 
-            slug = to_download[i]["id"]
+            slug = to_download[i]["url"].replace("https://clips.twitch.tv/", "")
 
             clip = twitch.get_clip(slug)
 
@@ -387,11 +390,12 @@ class MainWindow(QMainWindow):
         row = widgets.tableWidget_5.currentRow()
         col = widgets.tableWidget_5.currentColumn()
         if col == 4:
-            clip = self.clip_list[row]
-            print(clip)
-            import webbrowser
+            # get url from column 5
+            print(widgets.tableWidget_5.item(row, 5).text())
+            clip_url = json.loads(widgets.tableWidget_5.item(row, 5).text())["url"]
+            
 
-            webbrowser.open(clip["url"])
+            webbrowser.open(clip_url)
 
     def fetch_clips(self):
         channel = widgets.lineEdit_3.text()
@@ -401,13 +405,23 @@ class MainWindow(QMainWindow):
 
         widgets.tableWidget_5.clearContents()
         widgets.tableWidget_5.setRowCount(len(clips))
+        # set column names
+        widgets.tableWidget_5.setHorizontalHeaderLabels(["Created", "Creator", "Views", "Duration", "Title"])
+        # show header
+        widgets.tableWidget_5.horizontalHeader().show()
         for i in range(len(clips)):
-            self.clip_list.append(clips[i])
+            # self.clip_list.append(clips[i])
             widgets.tableWidget_5.setItem(i, 0, QTableWidgetItem(clips[i]["created_at"]))
             widgets.tableWidget_5.setItem(i, 1, QTableWidgetItem(clips[i]["creator_name"]))
             widgets.tableWidget_5.setItem(i, 2, QTableWidgetItem(str(clips[i]["view_count"])))
             widgets.tableWidget_5.setItem(i, 3, QTableWidgetItem(str(clips[i]["duration"]) + "s"))
             widgets.tableWidget_5.setItem(i, 4, QTableWidgetItem(clips[i]["title"]))
+            widgets.tableWidget_5.setItem(i, 5, QTableWidgetItem(json.dumps(clips[i])))
+
+        # hide url column
+        widgets.tableWidget_5.setColumnHidden(5, True)
+        # resize columns
+        widgets.tableWidget_5.resizeColumnsToContents()
 
     # BUTTONS CLICK
     # Post here your functions for clicked buttons

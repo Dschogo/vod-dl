@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1163</width>
+    <width>1343</width>
     <height>797</height>
    </rect>
   </property>
@@ -2144,7 +2144,7 @@ border-image: url(:/images/images/images/Dschogo.png);
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>292</width>
+                                   <width>218</width>
                                    <height>218</height>
                                   </rect>
                                  </property>
@@ -3348,7 +3348,7 @@ border-image: url(:/images/images/images/Dschogo.png);
                        <widget class="QWidget" name="clips">
                         <property name="maximumSize">
                          <size>
-                          <width>1061</width>
+                          <width>16777215</width>
                           <height>16777215</height>
                          </size>
                         </property>
@@ -3792,7 +3792,7 @@ border-image: url(:/images/images/images/Dschogo.png);
                                  <enum>Qt::SolidLine</enum>
                                 </property>
                                 <property name="sortingEnabled">
-                                 <bool>false</bool>
+                                 <bool>true</bool>
                                 </property>
                                 <property name="wordWrap">
                                  <bool>false</bool>
@@ -3801,7 +3801,7 @@ border-image: url(:/images/images/images/Dschogo.png);
                                  <number>4</number>
                                 </property>
                                 <property name="columnCount">
-                                 <number>5</number>
+                                 <number>6</number>
                                 </property>
                                 <attribute name="horizontalHeaderVisible">
                                  <bool>false</bool>
@@ -3810,7 +3810,7 @@ border-image: url(:/images/images/images/Dschogo.png);
                                  <bool>true</bool>
                                 </attribute>
                                 <attribute name="horizontalHeaderDefaultSectionSize">
-                                 <number>200</number>
+                                 <number>100</number>
                                 </attribute>
                                 <attribute name="horizontalHeaderStretchLastSection">
                                  <bool>true</bool>
@@ -3855,6 +3855,7 @@ border-image: url(:/images/images/images/Dschogo.png);
                                   <string>2</string>
                                  </property>
                                 </column>
+                                <column/>
                                 <column/>
                                 <column/>
                                 <item row="0" column="0">

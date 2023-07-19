@@ -14,11 +14,12 @@ from PySide6.QtWidgets import *
 
 from . resources_rc import *
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1163, 797)
+        MainWindow.resize(1343, 797)
         MainWindow.setMinimumSize(QSize(940, 560))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
@@ -1162,7 +1163,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 292, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1616,7 +1617,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.vods)
         self.clips = QWidget()
         self.clips.setObjectName(u"clips")
-        self.clips.setMaximumSize(QSize(1061, 16777215))
+        self.clips.setMaximumSize(QSize(16777215, 16777215))
         self.verticalLayout_15 = QVBoxLayout(self.clips)
         self.verticalLayout_15.setObjectName(u"verticalLayout_15")
         self.verticalLayout_25 = QVBoxLayout()
@@ -1716,8 +1717,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_26.addWidget(self.lineEdit_4)
 
         self.tableWidget_5 = QTableWidget(self.row_5)
-        if (self.tableWidget_5.columnCount() < 5):
-            self.tableWidget_5.setColumnCount(5)
+        if (self.tableWidget_5.columnCount() < 6):
+            self.tableWidget_5.setColumnCount(6)
         __qtablewidgetitem31 = QTableWidgetItem()
         self.tableWidget_5.setHorizontalHeaderItem(0, __qtablewidgetitem31)
         __qtablewidgetitem32 = QTableWidgetItem()
@@ -1777,17 +1778,17 @@ class Ui_MainWindow(object):
         self.tableWidget_5.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.tableWidget_5.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.tableWidget_5.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tableWidget_5.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.tableWidget_5.setSelectionMode(QAbstractItemView.MultiSelection)
         self.tableWidget_5.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget_5.setShowGrid(True)
         self.tableWidget_5.setGridStyle(Qt.SolidLine)
-        self.tableWidget_5.setSortingEnabled(False)
+        self.tableWidget_5.setSortingEnabled(True)
         self.tableWidget_5.setWordWrap(False)
         self.tableWidget_5.setRowCount(4)
-        self.tableWidget_5.setColumnCount(5)
+        self.tableWidget_5.setColumnCount(6)
         self.tableWidget_5.horizontalHeader().setVisible(False)
         self.tableWidget_5.horizontalHeader().setCascadingSectionResizes(True)
-        self.tableWidget_5.horizontalHeader().setDefaultSectionSize(200)
+        self.tableWidget_5.horizontalHeader().setDefaultSectionSize(100)
         self.tableWidget_5.horizontalHeader().setStretchLastSection(True)
         self.tableWidget_5.verticalHeader().setVisible(False)
         self.tableWidget_5.verticalHeader().setCascadingSectionResizes(False)
