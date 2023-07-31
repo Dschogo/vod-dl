@@ -14,12 +14,11 @@ from PySide6.QtWidgets import *
 
 from . resources_rc import *
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1343, 797)
+        MainWindow.resize(1097, 903)
         MainWindow.setMinimumSize(QSize(940, 560))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
@@ -1032,13 +1031,47 @@ class Ui_MainWindow(object):
         self.horizontalLayout_16.setContentsMargins(10, 10, 10, 10)
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+
+        self.horizontalLayout_16.addLayout(self.horizontalLayout_8)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.stackedWidget = QStackedWidget(self.pagesContainer)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.stackedWidget.setStyleSheet(u"background: transparent;")
         self.home = QWidget()
         self.home.setObjectName(u"home")
         self.home.setAutoFillBackground(False)
-        self.home.setStyleSheet(u"background-position: center;\n"
+        self.verticalLayoutWidget = QWidget(self.home)
+        self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
+        self.verticalLayoutWidget.setGeometry(QRect(50, 10, 871, 241))
+        self.verticalLayout_29 = QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout_29.setObjectName(u"verticalLayout_29")
+        self.verticalLayout_29.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.lineEdit_5 = QLineEdit(self.verticalLayoutWidget)
+        self.lineEdit_5.setObjectName(u"lineEdit_5")
+
+        self.horizontalLayout_17.addWidget(self.lineEdit_5)
+
+        self.download_link = QPushButton(self.verticalLayoutWidget)
+        self.download_link.setObjectName(u"download_link")
+
+        self.horizontalLayout_17.addWidget(self.download_link)
+
+
+        self.verticalLayout_29.addLayout(self.horizontalLayout_17)
+
+        self.donwload_stat_link = QLabel(self.verticalLayoutWidget)
+        self.donwload_stat_link.setObjectName(u"donwload_stat_link")
+
+        self.verticalLayout_29.addWidget(self.donwload_stat_link)
+
+        self.copy = QLabel(self.home)
+        self.copy.setObjectName(u"copy")
+        self.copy.setGeometry(QRect(0, 490, 371, 291))
+        self.copy.setStyleSheet(u"background-position: center;\n"
 "background-repeat: no-repeat;\n"
 "border-image: url(:/images/images/images/Dschogo.png);\n"
 "")
@@ -1594,6 +1627,18 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_7.addWidget(self.pushButton_5)
 
+        self.pushButton_15 = QPushButton(self.vods)
+        self.pushButton_15.setObjectName(u"pushButton_15")
+        self.pushButton_15.setMinimumSize(QSize(150, 30))
+        self.pushButton_15.setFont(font)
+        self.pushButton_15.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pushButton_15.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        icon8 = QIcon()
+        icon8.addFile(u":/icons/images/icons/cil-clipboard.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.pushButton_15.setIcon(icon8)
+
+        self.horizontalLayout_7.addWidget(self.pushButton_15)
+
 
         self.verticalLayout_20.addLayout(self.horizontalLayout_7)
 
@@ -1819,18 +1864,23 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_14.addWidget(self.labelprogress_2)
 
-        self.labelprogress_3 = QLabel(self.frame_title_wid_6)
-        self.labelprogress_3.setObjectName(u"labelprogress_3")
-        self.labelprogress_3.setFont(font)
-        self.labelprogress_3.setStyleSheet(u"")
-
-        self.horizontalLayout_14.addWidget(self.labelprogress_3)
-
 
         self.verticalLayout_36.addLayout(self.horizontalLayout_14)
 
 
         self.verticalLayout_15.addWidget(self.frame_title_wid_6)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.pushButton_8 = QPushButton(self.clips)
+        self.pushButton_8.setObjectName(u"pushButton_8")
+        self.pushButton_8.setMinimumSize(QSize(150, 30))
+        self.pushButton_8.setFont(font)
+        self.pushButton_8.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pushButton_8.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.pushButton_8.setIcon(icon7)
+
+        self.horizontalLayout_15.addWidget(self.pushButton_8)
 
         self.pushButton_6 = QPushButton(self.clips)
         self.pushButton_6.setObjectName(u"pushButton_6")
@@ -1838,19 +1888,17 @@ class Ui_MainWindow(object):
         self.pushButton_6.setFont(font)
         self.pushButton_6.setCursor(QCursor(Qt.PointingHandCursor))
         self.pushButton_6.setStyleSheet(u"background-color: rgb(52, 59, 72);")
-        self.pushButton_6.setIcon(icon7)
+        self.pushButton_6.setIcon(icon8)
 
-        self.verticalLayout_15.addWidget(self.pushButton_6)
+        self.horizontalLayout_15.addWidget(self.pushButton_6)
+
+
+        self.verticalLayout_15.addLayout(self.horizontalLayout_15)
 
         self.stackedWidget.addWidget(self.clips)
 
-        self.horizontalLayout_8.addWidget(self.stackedWidget)
+        self.horizontalLayout_6.addWidget(self.stackedWidget)
 
-
-        self.horizontalLayout_16.addLayout(self.horizontalLayout_8)
-
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
 
         self.horizontalLayout_16.addLayout(self.horizontalLayout_6)
 
@@ -1992,7 +2040,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -2051,6 +2099,11 @@ class Ui_MainWindow(object):
         self.closeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Close", None))
 #endif // QT_CONFIG(tooltip)
         self.closeAppBtn.setText("")
+        self.lineEdit_5.setInputMask("")
+        self.lineEdit_5.setPlaceholderText(QCoreApplication.translate("MainWindow", u"In put link here type: https://clips.twitch.tv/...", None))
+        self.download_link.setText(QCoreApplication.translate("MainWindow", u"Download", None))
+        self.donwload_stat_link.setText(QCoreApplication.translate("MainWindow", u"...", None))
+        self.copy.setText("")
         self.labelBoxBlenderInstalation.setText(QCoreApplication.translate("MainWindow", u"FILE BOX", None))
         self.labelVersion_3.setText(QCoreApplication.translate("MainWindow", u"Label description", None))
         self.lineEdit.setText("")
@@ -2145,12 +2198,13 @@ class Ui_MainWindow(object):
         self.timeEdit.setDisplayFormat(QCoreApplication.translate("MainWindow", u"HH:mm:ss", None))
         self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"preview", None))
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"DONWLOAD", None))
+        self.pushButton_15.setText(QCoreApplication.translate("MainWindow", u"Share Link", None))
         self.labelprogress.setText("")
         self.labelBoxBlenderInstalation_3.setText(QCoreApplication.translate("MainWindow", u"Download Clips", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Load", None))
         self.labelVersion_5.setText(QCoreApplication.translate("MainWindow", u"Channel name", None))
         self.lineEdit_3.setText("")
-        self.lineEdit_3.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
+        self.lineEdit_3.setPlaceholderText(QCoreApplication.translate("MainWindow", u"You have to be logged in to use the clips feature", None))
         self.lineEdit_4.setText("")
         self.lineEdit_4.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
         ___qtablewidgetitem31 = self.tableWidget_5.horizontalHeaderItem(0)
@@ -2173,8 +2227,8 @@ class Ui_MainWindow(object):
         self.tableWidget_5.setSortingEnabled(__sortingEnabled2)
 
         self.labelprogress_2.setText("")
-        self.labelprogress_3.setText("")
-        self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"DONWLOAD", None))
+        self.pushButton_8.setText(QCoreApplication.translate("MainWindow", u"DONWLOAD", None))
+        self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"Share link", None))
         self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Output folder", None))
         self.btn_login.setText(QCoreApplication.translate("MainWindow", u"Login", None))
         self.btn_logout.setText(QCoreApplication.translate("MainWindow", u"Logout", None))

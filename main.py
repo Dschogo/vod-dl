@@ -172,6 +172,8 @@ class MainWindow(QMainWindow):
         widgets.tableWidget_5.setColumnWidth(3, 50)
 
         widgets.pushButton_6.clicked.connect(self.download_clip_proxy)
+
+        widgets.download_link.clicked.connect(self.download_clip_link_proxy)
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
         self.show()
@@ -238,6 +240,18 @@ class MainWindow(QMainWindow):
 
         c = threading.Thread(target=self.donwload_video)
         c.start()
+
+    def download_clip_link_proxy(self):
+
+        import threading
+
+        c = threading.Thread(target=self.download_clip_link)
+        c.start()
+
+    def download_clip_link(self):
+        url_slug = widgets.lineEdit_5.text()
+        self.download_internal_clip(url_slug, label=widgets.donwload_stat_link)
+
 
     def donwload_video(self):
         # get selected video
@@ -337,7 +351,7 @@ class MainWindow(QMainWindow):
         serv.shutdown()
 
     def download_clip(self):
-        args = {"output": "{date}_{id}_{channel_login}_{title_slug}.{format}", "format": "mp4"}
+        
         # download all selected clips
         to_download = []
         for i in widgets.tableWidget_5.selectionModel().selectedRows():
@@ -348,24 +362,27 @@ class MainWindow(QMainWindow):
 
         for i in range(len(to_download)):
             widgets.labelprogress_2.setText(f"Downloading clip {i+1}/{len(to_download)}")
+            self.download_internal_clip(to_download[i]["url"], widgets.labelprogress_2)
 
-            slug = to_download[i]["url"].replace("https://clips.twitch.tv/", "")
+    def download_internal_clip(self, clip_url, label):
+        args = {"output": "{date}_{id}_{channel_login}_{title_slug}.{format}", "format": "mp4"}
+        slug = clip_url.replace("https://clips.twitch.tv/", "")
 
-            clip = twitch.get_clip(slug)
+        clip = twitch.get_clip(slug)
 
-            target = twitch._clip_target_filename(clip, args)
-            target = os.path.join(self.folder, target)
-            print("Target: <blue>{}</blue>".format(target))
+        target = twitch._clip_target_filename(clip, args)
+        target = os.path.join(self.folder, target)
+        print("Target: <blue>{}</blue>".format(target))
 
-            url = twitch.get_clip_authenticated_url(slug, "source")
-            print("<dim>Selected URL: {}</dim>".format(url))
+        url = twitch.get_clip_authenticated_url(slug, "source")
+        print("<dim>Selected URL: {}</dim>".format(url))
 
-            print("<dim>Downloading clip...</dim>")
-            twitch.download_file(url, target)
+        print("<dim>Downloading clip...</dim>")
+        twitch.download_file(url, target)
 
-            print("Downloaded: <blue>{}</blue>".format(target))
+        print("Downloaded: <blue>{}</blue>".format(target))
 
-        widgets.labelprogress_2.setText("Done")
+        label.setText("Done")
 
     def download_clip_proxy(self):
         import threading

@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1343</width>
-    <height>797</height>
+    <width>1097</width>
+    <height>903</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1863,25 +1863,81 @@ li.checked::marker { content: &quot;\2612&quot;; }
                     <number>10</number>
                    </property>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_8">
+                    <layout class="QHBoxLayout" name="horizontalLayout_8"/>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_6">
                      <item>
                       <widget class="QStackedWidget" name="stackedWidget">
                        <property name="styleSheet">
                         <string notr="true">background: transparent;</string>
                        </property>
                        <property name="currentIndex">
-                        <number>3</number>
+                        <number>0</number>
                        </property>
                        <widget class="QWidget" name="home">
                         <property name="autoFillBackground">
                          <bool>false</bool>
                         </property>
-                        <property name="styleSheet">
-                         <string notr="true">background-position: center;
+                        <widget class="QWidget" name="verticalLayoutWidget">
+                         <property name="geometry">
+                          <rect>
+                           <x>50</x>
+                           <y>10</y>
+                           <width>871</width>
+                           <height>241</height>
+                          </rect>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_29">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_17">
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_5">
+                              <property name="inputMask">
+                               <string/>
+                              </property>
+                              <property name="placeholderText">
+                               <string>In put link here type: https://clips.twitch.tv/...</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QPushButton" name="download_link">
+                              <property name="text">
+                               <string>Download</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="donwload_stat_link">
+                            <property name="text">
+                             <string>...</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                        <widget class="QLabel" name="copy">
+                         <property name="geometry">
+                          <rect>
+                           <x>0</x>
+                           <y>490</y>
+                           <width>371</width>
+                           <height>291</height>
+                          </rect>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-position: center;
 background-repeat: no-repeat;
 border-image: url(:/images/images/images/Dschogo.png);
 </string>
-                        </property>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
                        </widget>
                        <widget class="QWidget" name="widgets">
                         <property name="styleSheet">
@@ -3305,6 +3361,37 @@ border-image: url(:/images/images/images/Dschogo.png);
                              </property>
                             </widget>
                            </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_15">
+                             <property name="minimumSize">
+                              <size>
+                               <width>150</width>
+                               <height>30</height>
+                              </size>
+                             </property>
+                             <property name="font">
+                              <font>
+                               <family>Segoe UI</family>
+                               <pointsize>10</pointsize>
+                               <italic>false</italic>
+                               <bold>false</bold>
+                              </font>
+                             </property>
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color: rgb(52, 59, 72);</string>
+                             </property>
+                             <property name="text">
+                              <string>Share Link</string>
+                             </property>
+                             <property name="icon">
+                              <iconset resource="resources.qrc">
+                               <normaloff>:/icons/images/icons/cil-clipboard.png</normaloff>:/icons/images/icons/cil-clipboard.png</iconset>
+                             </property>
+                            </widget>
+                           </item>
                           </layout>
                          </item>
                          <item>
@@ -3523,7 +3610,7 @@ border-image: url(:/images/images/images/Dschogo.png);
                                          <string/>
                                         </property>
                                         <property name="placeholderText">
-                                         <string>Type here</string>
+                                         <string>You have to be logged in to use the clips feature</string>
                                         </property>
                                        </widget>
                                       </item>
@@ -3915,68 +4002,82 @@ border-image: url(:/images/images/images/Dschogo.png);
                                 </property>
                                </widget>
                               </item>
-                              <item>
-                               <widget class="QLabel" name="labelprogress_3">
-                                <property name="font">
-                                 <font>
-                                  <family>Segoe UI</family>
-                                  <pointsize>10</pointsize>
-                                  <italic>false</italic>
-                                  <bold>false</bold>
-                                 </font>
-                                </property>
-                                <property name="styleSheet">
-                                 <string notr="true"/>
-                                </property>
-                                <property name="text">
-                                 <string/>
-                                </property>
-                               </widget>
-                              </item>
                              </layout>
                             </item>
                            </layout>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_6">
-                           <property name="minimumSize">
-                            <size>
-                             <width>150</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <family>Segoe UI</family>
-                             <pointsize>10</pointsize>
-                             <italic>false</italic>
-                             <bold>false</bold>
-                            </font>
-                           </property>
-                           <property name="cursor">
-                            <cursorShape>PointingHandCursor</cursorShape>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">background-color: rgb(52, 59, 72);</string>
-                           </property>
-                           <property name="text">
-                            <string>DONWLOAD</string>
-                           </property>
-                           <property name="icon">
-                            <iconset resource="resources.qrc">
-                             <normaloff>:/icons/images/icons/cil-caret-bottom.png</normaloff>:/icons/images/icons/cil-caret-bottom.png</iconset>
-                           </property>
-                          </widget>
+                          <layout class="QHBoxLayout" name="horizontalLayout_15">
+                           <item>
+                            <widget class="QPushButton" name="pushButton_8">
+                             <property name="minimumSize">
+                              <size>
+                               <width>150</width>
+                               <height>30</height>
+                              </size>
+                             </property>
+                             <property name="font">
+                              <font>
+                               <family>Segoe UI</family>
+                               <pointsize>10</pointsize>
+                               <italic>false</italic>
+                               <bold>false</bold>
+                              </font>
+                             </property>
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color: rgb(52, 59, 72);</string>
+                             </property>
+                             <property name="text">
+                              <string>DONWLOAD</string>
+                             </property>
+                             <property name="icon">
+                              <iconset resource="resources.qrc">
+                               <normaloff>:/icons/images/icons/cil-caret-bottom.png</normaloff>:/icons/images/icons/cil-caret-bottom.png</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_6">
+                             <property name="minimumSize">
+                              <size>
+                               <width>150</width>
+                               <height>30</height>
+                              </size>
+                             </property>
+                             <property name="font">
+                              <font>
+                               <family>Segoe UI</family>
+                               <pointsize>10</pointsize>
+                               <italic>false</italic>
+                               <bold>false</bold>
+                              </font>
+                             </property>
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color: rgb(52, 59, 72);</string>
+                             </property>
+                             <property name="text">
+                              <string>Share link</string>
+                             </property>
+                             <property name="icon">
+                              <iconset resource="resources.qrc">
+                               <normaloff>:/icons/images/icons/cil-clipboard.png</normaloff>:/icons/images/icons/cil-clipboard.png</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
                          </item>
                         </layout>
                        </widget>
                       </widget>
                      </item>
                     </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_6"/>
                    </item>
                   </layout>
                  </widget>
