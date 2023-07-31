@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         title = "Vod-dl"
         description = "Vod-dl Alpha"
-        version = "0.1.3"
+        version = "0.1.4"
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
