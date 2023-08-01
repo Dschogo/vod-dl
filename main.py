@@ -48,6 +48,8 @@ CLIENT_ID = "um6i0x3u4m9j42plwlh0zck9kk0wzq"
 
 twitch_token = None
 
+port = 4974
+
 
 class MainWindow(QMainWindow):
     class Server(BaseHTTPRequestHandler):
@@ -62,7 +64,7 @@ class MainWindow(QMainWindow):
                 twitch_token = self.path.split("=")[1].split("&")[0]
                 self.wfile.write(
                     bytes(
-                        "<html><body><h1>You can close this window now</h1></   body></html><script>window.location.href = 'http://localhost:4973'</script>",
+                        "<html><body><h1>You can close this window now</h1></   body></html><script>window.location.href = 'http://localhost:" + str(port) + "'</script>",
                         "utf-8",
                     )
                 )
@@ -74,7 +76,7 @@ class MainWindow(QMainWindow):
 
                 self.wfile.write(
                     bytes(
-                        "<html><body><h1>You can close this window now</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:4973?access_token=' + accessToken} else {window.close()};;</script>",
+                        "<html><body><h1>You can close this window now</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:" + str(port) + "?access_token=' + accessToken} else {window.close()};;</script>",
                         "utf-8",
                     )
                 )
@@ -136,6 +138,10 @@ class MainWindow(QMainWindow):
         widgets.pushButton_2.clicked.connect(self.fetch_videos)
         widgets.pushButton_3.clicked.connect(self.fetch_clips)
 
+        widgets.pushButton_2.setDisabled(True)
+        widgets.pushButton_3.setDisabled(True)
+
+
         widgets.dateEdit.setDateTime(QDateTime.currentDateTime())
         widgets.dateEdit_2.setDateTime(QDateTime.currentDateTime())
         widgets.toggleLeftBox.hide()
@@ -157,11 +163,11 @@ class MainWindow(QMainWindow):
         widgets.btn_logout.hide()
         widgets.btn_message.clicked.connect(self.set_output)
 
-        widgets.btn_home.hide()
+        # widgets.btn_home.hide()
         widgets.btn_save.hide()
         widgets.btn_exit.hide()
 
-        widgets.tableWidget_4.cellClicked.connect(self.video_selected)
+        widgets.tableWidget_4.itemSelectionChanged.connect(self.video_selected)
         widgets.pushButton_7.clicked.connect(self.preview_video)
 
         widgets.tableWidget_5.cellClicked.connect(self.clip_selected)
@@ -203,7 +209,10 @@ class MainWindow(QMainWindow):
         # save to settings file
         self.settings.setValue("folder", self.folder)
 
-    def video_selected(self, row, col):
+    def video_selected(self):
+        # get selected video
+        row = widgets.tableWidget_4.currentRow()
+
         # update timedit
         widgets.timeEdit_2.setTime(QTime(0, 0, 0))
         hours, minutes, seconds = widgets.tableWidget_4.item(row, 1).text().split(":")
@@ -328,7 +337,7 @@ class MainWindow(QMainWindow):
     def login(self):
         global twitch_token
 
-        serv = HTTPServer(("localhost", 4973), self.Server)
+        serv = HTTPServer(("localhost", port), self.Server)
 
         login_thread = threading.Thread(target=serv.serve_forever)
 
@@ -337,7 +346,7 @@ class MainWindow(QMainWindow):
         webbrowser.open(
             "https://id.twitch.tv/oauth2/authorize?client_id="
             + CLIENT_ID
-            + "&redirect_uri=http://localhost:4973&response_type=token&scope=channel:read:subscriptions&force_verify=true"
+            + "&redirect_uri=http://localhost:" + str(port) + "&response_type=token&scope=channel:read:subscriptions" # &force_verify=true
         )
         # wait for twitch login
 
@@ -346,6 +355,10 @@ class MainWindow(QMainWindow):
             time.sleep(1)
         widgets.btn_login.hide()
         widgets.btn_logout.show()
+
+        widgets.pushButton_2.setEnabled(True)
+        widgets.pushButton_3.setEnabled(True)
+
         print("closing server")
         time.sleep(1)
         serv.shutdown()
