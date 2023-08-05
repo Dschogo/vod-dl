@@ -76,7 +76,9 @@ class MainWindow(QMainWindow):
 
                 self.wfile.write(
                     bytes(
-                        "<html><body><h1>You can close this window now</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:" + str(port) + "?access_token=' + accessToken} else {window.close()};;</script>",
+                        "<html><body><h1>You can close this window now</h1></   body></html><script>const urlParams = new URLSearchParams(window.location.hash.substr(1));const accessToken = urlParams.get('access_token');if (accessToken != null) {const redirectUri = window.location.href = 'http://localhost:"
+                        + str(port)
+                        + "?access_token=' + accessToken} else {window.close()};;</script>",
                         "utf-8",
                     )
                 )
@@ -99,6 +101,8 @@ class MainWindow(QMainWindow):
         self.settings = QSettings("settings.ini", QSettings.IniFormat)
         self.folder = self.settings.value("folder", os.getcwd())
 
+        print(f"output folder: {self.folder}")
+
         # USE CUSTOM TITLE BAR | USE AS "False" FOR MAC OR LINUX
         # ///////////////////////////////////////////////////////////////
         Settings.ENABLE_CUSTOM_TITLE_BAR = True
@@ -107,7 +111,7 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         title = "Vod-dl"
         description = "Vod-dl Alpha"
-        version = "0.1.4"
+        version = "0.1.5 "
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
@@ -141,7 +145,6 @@ class MainWindow(QMainWindow):
         widgets.pushButton_2.setDisabled(True)
         widgets.pushButton_3.setDisabled(True)
 
-
         widgets.dateEdit.setDateTime(QDateTime.currentDateTime())
         widgets.dateEdit_2.setDateTime(QDateTime.currentDateTime())
         widgets.toggleLeftBox.hide()
@@ -166,6 +169,10 @@ class MainWindow(QMainWindow):
         # widgets.btn_home.hide()
         widgets.btn_save.hide()
         widgets.btn_exit.hide()
+
+        # share links
+        widgets.pushButton_15.hide()
+        widgets.pushButton_6.hide()
 
         widgets.tableWidget_4.itemSelectionChanged.connect(self.video_selected)
         widgets.pushButton_7.clicked.connect(self.preview_video)
@@ -204,10 +211,11 @@ class MainWindow(QMainWindow):
 
     def set_output(self):
         # filpicker for folder
-        self.folder = QFileDialog.getExistingDirectory(self, "Select Directory")
+        self.folder = QFileDialog.getExistingDirectory(self, "Select Directory", self.folder)
 
         # save to settings file
         self.settings.setValue("folder", self.folder)
+        self.settings.sync()
 
     def video_selected(self):
         # get selected video
@@ -237,9 +245,11 @@ class MainWindow(QMainWindow):
         for i in range(len(vids)):
             vid = vids[i]["node"]
             self.videolist.append(vid)
-            h = int(vid["lengthSeconds"]) // 3600
-            m = (int(vid["lengthSeconds"]) - h * 3600) // 60
-            s = int(vid["lengthSeconds"]) - h * 3600 - m * 60
+
+            h = str(int(vid["lengthSeconds"]) // 3600).zfill(2) 
+            m = str((int(vid["lengthSeconds"]) - int(h) * 3600) // 60).zfill(2)
+            s = str(int(vid["lengthSeconds"]) - int(h) * 3600 - int(m) * 60).zfill(2)
+
             widgets.tableWidget_4.setItem(i, 0, QTableWidgetItem(vid["createdAt"]))
             widgets.tableWidget_4.setItem(i, 1, QTableWidgetItem(f"{h}:{m}:{s}"))
             widgets.tableWidget_4.setItem(i, 2, QTableWidgetItem(vid["title"]))
@@ -251,7 +261,6 @@ class MainWindow(QMainWindow):
         c.start()
 
     def download_clip_link_proxy(self):
-
         import threading
 
         c = threading.Thread(target=self.download_clip_link)
@@ -260,7 +269,6 @@ class MainWindow(QMainWindow):
     def download_clip_link(self):
         url_slug = widgets.lineEdit_5.text()
         self.download_internal_clip(url_slug, label=widgets.donwload_stat_link)
-
 
     def donwload_video(self):
         # get selected video
@@ -273,8 +281,8 @@ class MainWindow(QMainWindow):
         video = self.videolist[row]
         print(video)
         access_token = twitch.get_access_token(video["id"], twitch_token)
-        args = {"output": "{date}_{id}_{channel_login}_{title_slug}.{format}", "format": "mp4"}
-        target = twitch._video_target_filename(video, args)
+        args = {"output": "{date}_{id}_{channel_login}_{title_slug}_{start_sec}_{end_sec}.{format}", "format": "mp4"}
+        target = twitch._video_target_filename(video, args, start_sec, end_sec)
 
         print("<dim>Fetching playlists...</dim>")
         playlists_m3u8 = twitch.get_playlists(video["id"], access_token)
@@ -288,7 +296,8 @@ class MainWindow(QMainWindow):
 
         base_uri = re.sub("/[^/]+$", "/", playlist_uri)
         target_dir = twitch._crete_temp_dir(base_uri, self.folder)
-        vod_paths = twitch._get_vod_paths(playlist, start_sec, end_sec)
+        t = twitch._get_vod_paths(playlist, start_sec, end_sec)
+        vod_paths = t[0]
 
         # Save playlists for debugging purposes
         with open(os.path.join(target_dir, "playlists.m3u8"), "w") as f:
@@ -323,10 +332,28 @@ class MainWindow(QMainWindow):
         set_progresstxt("Creating Video File...")
         print(target)
         print(target_dir)
-        twitch._join_vods(playlist_path, os.path.join(self.folder, target), True, video)
+        # append :00 to time for frames
+        # start = widgets.timeEdit_2.text() + ":00"
+        # end = widgets.timeEdit.text() + ":00"
+
+        segment_start_sec = int(t[1])
+        segment_end_sec = int(t[2])
+
+        # to timecode 00:00:00:00
+        start = "{:02d}:{:02d}:{:02d}:{:02d}".format(
+            segment_start_sec // 3600, (segment_start_sec % 3600) // 60, segment_start_sec % 60, 0
+        )
+        end = "{:02d}:{:02d}:{:02d}:{:02d}".format(
+            segment_end_sec // 3600, (segment_end_sec % 3600) // 60, segment_end_sec % 60, 0
+        )
+        
+        print(f"start: {start} end: {end} (of direct segments)")
+
+        twitch._join_vods(playlist_path, os.path.join(self.folder, target), True, video, start)
         # delete temp folder - target_dir two levels up
         shutil.rmtree(os.path.dirname(os.path.dirname(target_dir)))
         set_progresstxt("Done")
+        print("Done")
 
     def logout(self):
         global twitch_token
@@ -346,7 +373,9 @@ class MainWindow(QMainWindow):
         webbrowser.open(
             "https://id.twitch.tv/oauth2/authorize?client_id="
             + CLIENT_ID
-            + "&redirect_uri=http://localhost:" + str(port) + "&response_type=token&scope=channel:read:subscriptions" # &force_verify=true
+            + "&redirect_uri=http://localhost:"
+            + str(port)
+            + "&response_type=token&scope=channel:read:subscriptions"  # &force_verify=true
         )
         # wait for twitch login
 
@@ -360,11 +389,10 @@ class MainWindow(QMainWindow):
         widgets.pushButton_3.setEnabled(True)
 
         print("closing server")
-        time.sleep(1)
+        time.sleep(0.2)
         serv.shutdown()
 
     def download_clip(self):
-        
         # download all selected clips
         to_download = []
         for i in widgets.tableWidget_5.selectionModel().selectedRows():

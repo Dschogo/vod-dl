@@ -45,7 +45,7 @@ def titlify(value):
     return value.strip()
 
 
-def _video_target_filename(video, args):
+def _video_target_filename(video, args, start_sec, end_sec):
     date, time = video["createdAt"].split("T")
     game = video["game"]["name"] if video["game"] else "Unknown"
 
@@ -61,6 +61,8 @@ def _video_target_filename(video, args):
         "time": time,
         "title": titlify(video["title"]),
         "title_slug": slugify(video["title"]),
+        "start_sec": start_sec,
+        "end_sec": end_sec,
     }
 
     try:
@@ -254,7 +256,7 @@ def get_clip_authenticated_url(slug, quality):
     return "{}?{}".format(url, query)
 
 
-def _join_vods(playlist_path, target, overwrite, video):
+def _join_vods(playlist_path, target, overwrite, video, start):
     command = [
         "ffmpeg",
         "-i",
@@ -265,6 +267,9 @@ def _join_vods(playlist_path, target, overwrite, video):
         "artist={}".format(video["creator"]["displayName"]),
         "-metadata",
         "title={}".format(video["title"]),
+        # add timecode to start of video
+        "-timecode",
+        "{}".format(start),
         "-metadata",
         "encoded_by=twitch-dl",
         "-stats",
@@ -282,10 +287,12 @@ def _join_vods(playlist_path, target, overwrite, video):
         raise ConsoleError("Joining files failed")
 
 
-def _get_vod_paths(playlist, start: Optional[int], end: Optional[int]) -> List[str]:
+def _get_vod_paths(playlist, start: Optional[int], end: Optional[int]):
     """Extract unique VOD paths for download from playlist."""
     files = []
     vod_start = 0
+    startstart = -1
+    endend  = -1
     for segment in playlist.segments:
         vod_end = vod_start + segment.duration
 
@@ -296,10 +303,13 @@ def _get_vod_paths(playlist, start: Optional[int], end: Optional[int]) -> List[s
 
         if start_condition and end_condition and segment.uri not in files:
             files.append(segment.uri)
+            if startstart == -1:
+                startstart = vod_start
+            endend = vod_end
 
         vod_start = vod_end
 
-    return files
+    return [files, startstart, endend]
 
 
 def _crete_temp_dir(base_uri: str, root_output) -> str:
