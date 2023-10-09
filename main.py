@@ -184,7 +184,7 @@ class MainWindow(QMainWindow):
         widgets.tableWidget_5.setColumnWidth(2, 50)
         widgets.tableWidget_5.setColumnWidth(3, 50)
 
-        widgets.pushButton_6.clicked.connect(self.download_clip_proxy)
+        widgets.pushButton_8.clicked.connect(self.download_clip_proxy)
 
         widgets.download_link.clicked.connect(self.download_clip_link_proxy)
         # SHOW APP
@@ -246,7 +246,7 @@ class MainWindow(QMainWindow):
             vid = vids[i]["node"]
             self.videolist.append(vid)
 
-            h = str(int(vid["lengthSeconds"]) // 3600).zfill(2) 
+            h = str(int(vid["lengthSeconds"]) // 3600).zfill(2)
             m = str((int(vid["lengthSeconds"]) - int(h) * 3600) // 60).zfill(2)
             s = str(int(vid["lengthSeconds"]) - int(h) * 3600 - int(m) * 60).zfill(2)
 
@@ -340,13 +340,9 @@ class MainWindow(QMainWindow):
         segment_end_sec = int(t[2])
 
         # to timecode 00:00:00:00
-        start = "{:02d}:{:02d}:{:02d}:{:02d}".format(
-            segment_start_sec // 3600, (segment_start_sec % 3600) // 60, segment_start_sec % 60, 0
-        )
-        end = "{:02d}:{:02d}:{:02d}:{:02d}".format(
-            segment_end_sec // 3600, (segment_end_sec % 3600) // 60, segment_end_sec % 60, 0
-        )
-        
+        start = "{:02d}:{:02d}:{:02d}:{:02d}".format(segment_start_sec // 3600, (segment_start_sec % 3600) // 60, segment_start_sec % 60, 0)
+        end = "{:02d}:{:02d}:{:02d}:{:02d}".format(segment_end_sec // 3600, (segment_end_sec % 3600) // 60, segment_end_sec % 60, 0)
+
         print(f"start: {start} end: {end} (of direct segments)")
 
         twitch._join_vods(playlist_path, os.path.join(self.folder, target), True, video, start)
