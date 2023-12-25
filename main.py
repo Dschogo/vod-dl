@@ -27,6 +27,7 @@ import time
 import shutil
 import json
 import webbrowser
+import queue
 
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -97,6 +98,7 @@ class MainWindow(QMainWindow):
         global widgets
         widgets = self.ui
         self.videolist = []
+        self.download_queue = queue.Queue()
 
         self.settings = QSettings("settings.ini", QSettings.IniFormat)
         self.folder = self.settings.value("folder", os.getcwd())
@@ -209,6 +211,8 @@ class MainWindow(QMainWindow):
         widgets.stackedWidget.setCurrentWidget(widgets.home)
         widgets.btn_home.setStyleSheet(UIFunctions.selectMenu(widgets.btn_home.styleSheet()))
 
+        threading.Thread(target=self.download_queue_worker, daemon=True).start()
+
     def set_output(self):
         # filpicker for folder
         self.folder = QFileDialog.getExistingDirectory(self, "Select Directory", self.folder)
@@ -238,6 +242,7 @@ class MainWindow(QMainWindow):
 
     def fetch_videos(self):
         # demo fill table
+        self.videolist = []
         channel = widgets.lineEdit_2.text()
         vids = twitch.get_channel_videos(channel, limit=100, sort="time")["edges"]
         widgets.tableWidget_4.clearContents()
@@ -254,11 +259,34 @@ class MainWindow(QMainWindow):
             widgets.tableWidget_4.setItem(i, 1, QTableWidgetItem(f"{h}:{m}:{s}"))
             widgets.tableWidget_4.setItem(i, 2, QTableWidgetItem(vid["title"]))
 
-    def donwload_video_proxy(self):
-        import threading
+    def download_queue_worker(self):
+        while True:
+            if not self.download_queue.empty():
+                # get first item
+                start_sec, end_sec, vid = self.download_queue.get()
+                self.donwload_video(start_sec, end_sec, vid)
+                # print(f"fake   download video {vid['id']} from {start_sec} to {end_sec}")
+                self.download_queue.task_done()
+            else:
+                time.sleep(1)
 
-        c = threading.Thread(target=self.donwload_video)
-        c.start()
+    def donwload_video_proxy(self):
+        # import threading
+
+        # c = threading.Thread(target=self.donwload_video)
+        # c.start()
+
+        # use a queue to download multiple videos, one after another
+        start_sec = widgets.timeEdit_2.time().hour() * 3600 + widgets.timeEdit_2.time().minute() * 60 + widgets.timeEdit_2.time().second()
+        end_sec = widgets.timeEdit.time().hour() * 3600 + widgets.timeEdit.time().minute() * 60 + widgets.timeEdit.time().second()
+        row = widgets.tableWidget_4.currentRow()
+        video = self.videolist[row]
+
+        # self.download_queue.append((start_sec, end_sec, video))
+        self.download_queue.put((start_sec, end_sec, video))
+        print(f"Added video to download queue: {video['id']} - {video['title']} from {start_sec} to {end_sec} (queue size: {self.download_queue.qsize()})")
+
+
 
     def download_clip_link_proxy(self):
         import threading
@@ -270,22 +298,19 @@ class MainWindow(QMainWindow):
         url_slug = widgets.lineEdit_5.text()
         self.download_internal_clip(url_slug, label=widgets.donwload_stat_link)
 
-    def donwload_video(self):
+    def donwload_video(self, start_sec, end_sec, vid):
         # get selected video
-        row = widgets.tableWidget_4.currentRow()
-        channel = widgets.lineEdit_2.text()
-        print(f"download video {row} from {widgets.timeEdit_2.text()} to {widgets.timeEdit.text()}")
-        start_sec = widgets.timeEdit_2.time().hour() * 3600 + widgets.timeEdit_2.time().minute() * 60 + widgets.timeEdit_2.time().second()
-        end_sec = widgets.timeEdit.time().hour() * 3600 + widgets.timeEdit.time().minute() * 60 + widgets.timeEdit.time().second()
+        
+        print(f"download video {vid['id']} from {start_sec} to {end_sec}")
+        
 
-        video = self.videolist[row]
-        print(video)
-        access_token = twitch.get_access_token(video["id"], twitch_token)
+        print(vid)
+        access_token = twitch.get_access_token(vid["id"], twitch_token)
         args = {"output": "{date}_{id}_{channel_login}_{title_slug}_{start_sec}_{end_sec}.{format}", "format": "mp4"}
-        target = twitch._video_target_filename(video, args, start_sec, end_sec)
+        target = twitch._video_target_filename(vid, args, start_sec, end_sec)
 
         print("<dim>Fetching playlists...</dim>")
-        playlists_m3u8 = twitch.get_playlists(video["id"], access_token)
+        playlists_m3u8 = twitch.get_playlists(vid["id"], access_token)
         playlists = list(twitch._parse_playlists(playlists_m3u8))
         playlist_uri = twitch._get_playlist_by_name(playlists, "source")
 
@@ -297,6 +322,8 @@ class MainWindow(QMainWindow):
         base_uri = re.sub("/[^/]+$", "/", playlist_uri)
         target_dir = twitch._crete_temp_dir(base_uri, self.folder)
         t = twitch._get_vod_paths(playlist, start_sec, end_sec)
+        print(start_sec, end_sec)
+        # print(t)
         vod_paths = t[0]
 
         # Save playlists for debugging purposes
@@ -306,7 +333,7 @@ class MainWindow(QMainWindow):
             f.write(response.text)
 
         def set_progresstxt(text):
-            widgets.labelprogress.setText(text)
+            widgets.labelprogress.setText(text + "  -  " + str(self.download_queue.qsize()) + " in queue")
 
         print("\nDownloading {} VODs using {} workers to {}".format(len(vod_paths), 20, target_dir))
         sources = [base_uri + path for path in vod_paths]
@@ -345,7 +372,7 @@ class MainWindow(QMainWindow):
 
         print(f"start: {start} end: {end} (of direct segments)")
 
-        twitch._join_vods(playlist_path, os.path.join(self.folder, target), True, video, start)
+        twitch._join_vods(playlist_path, os.path.join(self.folder, target), True, vid, start)
         # delete temp folder - target_dir two levels up
         shutil.rmtree(os.path.dirname(os.path.dirname(target_dir)))
         set_progresstxt("Done")
@@ -538,6 +565,8 @@ class MainWindow(QMainWindow):
     # ///////////////////////////////////////////////////////////////
     def closeEvent(self, event):
         print("Closing")
+        print("Waiting for download queue to finish")
+        self.download_queue.join()
         # close localhost thread<
 
 

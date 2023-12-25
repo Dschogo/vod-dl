@@ -11,3 +11,5 @@ main_org.ui
 output/
 settings.ini
 temp.txt
+get_steam_info.py
+vod-dl.7z
