@@ -18,7 +18,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1097, 903)
+        MainWindow.resize(992, 867)
         MainWindow.setMinimumSize(QSize(940, 560))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
@@ -687,6 +687,16 @@ class Ui_MainWindow(object):
         self.btn_new.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-movie.png);")
 
         self.verticalLayout_8.addWidget(self.btn_new)
+
+        self.btn_download_queue = QPushButton(self.topMenu)
+        self.btn_download_queue.setObjectName(u"btn_download_queue")
+        sizePolicy.setHeightForWidth(self.btn_download_queue.sizePolicy().hasHeightForWidth())
+        self.btn_download_queue.setSizePolicy(sizePolicy)
+        self.btn_download_queue.setMinimumSize(QSize(0, 45))
+        self.btn_download_queue.setCursor(QCursor(Qt.PointingHandCursor))
+        self.btn_download_queue.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-arrow-circle-bottom.png);")
+
+        self.verticalLayout_8.addWidget(self.btn_download_queue)
 
         self.btn_save = QPushButton(self.topMenu)
         self.btn_save.setObjectName(u"btn_save")
@@ -1561,6 +1571,7 @@ class Ui_MainWindow(object):
         palette1.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush3)
 #endif
         self.tableWidget_4.setPalette(palette1)
+        self.tableWidget_4.setAutoFillBackground(False)
         self.tableWidget_4.setFrameShape(QFrame.NoFrame)
         self.tableWidget_4.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.tableWidget_4.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
@@ -1660,6 +1671,76 @@ class Ui_MainWindow(object):
         self.verticalLayout_20.addWidget(self.frame_title_wid_5)
 
         self.stackedWidget.addWidget(self.vods)
+        self.page = QWidget()
+        self.page.setObjectName(u"page")
+        self.horizontalLayout_18 = QHBoxLayout(self.page)
+        self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
+        self.verticalLayout_30 = QVBoxLayout()
+        self.verticalLayout_30.setObjectName(u"verticalLayout_30")
+        self.verticalLayout_30.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.DownladQueue = QLabel(self.page)
+        self.DownladQueue.setObjectName(u"DownladQueue")
+
+        self.verticalLayout_30.addWidget(self.DownladQueue)
+
+        self.download_table = QTableWidget(self.page)
+        if (self.download_table.columnCount() < 8):
+            self.download_table.setColumnCount(8)
+        __qtablewidgetitem31 = QTableWidgetItem()
+        self.download_table.setHorizontalHeaderItem(0, __qtablewidgetitem31)
+        __qtablewidgetitem32 = QTableWidgetItem()
+        self.download_table.setHorizontalHeaderItem(1, __qtablewidgetitem32)
+        __qtablewidgetitem33 = QTableWidgetItem()
+        self.download_table.setHorizontalHeaderItem(2, __qtablewidgetitem33)
+        if (self.download_table.rowCount() < 3):
+            self.download_table.setRowCount(3)
+        __qtablewidgetitem34 = QTableWidgetItem()
+        self.download_table.setItem(0, 0, __qtablewidgetitem34)
+        __qtablewidgetitem35 = QTableWidgetItem()
+        self.download_table.setItem(0, 1, __qtablewidgetitem35)
+        __qtablewidgetitem36 = QTableWidgetItem()
+        self.download_table.setItem(0, 2, __qtablewidgetitem36)
+        __qtablewidgetitem37 = QTableWidgetItem()
+        self.download_table.setItem(0, 3, __qtablewidgetitem37)
+        __qtablewidgetitem38 = QTableWidgetItem()
+        self.download_table.setItem(0, 4, __qtablewidgetitem38)
+        __qtablewidgetitem39 = QTableWidgetItem()
+        self.download_table.setItem(0, 5, __qtablewidgetitem39)
+        __qtablewidgetitem40 = QTableWidgetItem()
+        self.download_table.setItem(0, 6, __qtablewidgetitem40)
+        __qtablewidgetitem41 = QTableWidgetItem()
+        self.download_table.setItem(1, 3, __qtablewidgetitem41)
+        __qtablewidgetitem42 = QTableWidgetItem()
+        self.download_table.setItem(1, 4, __qtablewidgetitem42)
+        __qtablewidgetitem43 = QTableWidgetItem()
+        self.download_table.setItem(1, 5, __qtablewidgetitem43)
+        __qtablewidgetitem44 = QTableWidgetItem()
+        self.download_table.setItem(1, 6, __qtablewidgetitem44)
+        self.download_table.setObjectName(u"download_table")
+        self.download_table.setAcceptDrops(False)
+        self.download_table.setAutoFillBackground(False)
+        self.download_table.setFrameShape(QFrame.NoFrame)
+        self.download_table.setFrameShadow(QFrame.Sunken)
+        self.download_table.setLineWidth(2)
+        self.download_table.setMidLineWidth(2)
+        self.download_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.download_table.setSelectionMode(QAbstractItemView.NoSelection)
+        self.download_table.setRowCount(3)
+        self.download_table.setColumnCount(8)
+        self.download_table.horizontalHeader().setVisible(False)
+        self.download_table.horizontalHeader().setCascadingSectionResizes(True)
+        self.download_table.horizontalHeader().setDefaultSectionSize(200)
+        self.download_table.horizontalHeader().setStretchLastSection(True)
+        self.download_table.verticalHeader().setVisible(False)
+        self.download_table.verticalHeader().setHighlightSections(False)
+        self.download_table.verticalHeader().setStretchLastSection(True)
+
+        self.verticalLayout_30.addWidget(self.download_table)
+
+
+        self.horizontalLayout_18.addLayout(self.verticalLayout_30)
+
+        self.stackedWidget.addWidget(self.page)
         self.clips = QWidget()
         self.clips.setObjectName(u"clips")
         self.clips.setMaximumSize(QSize(16777215, 16777215))
@@ -1764,23 +1845,23 @@ class Ui_MainWindow(object):
         self.tableWidget_5 = QTableWidget(self.row_5)
         if (self.tableWidget_5.columnCount() < 6):
             self.tableWidget_5.setColumnCount(6)
-        __qtablewidgetitem31 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(0, __qtablewidgetitem31)
-        __qtablewidgetitem32 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(1, __qtablewidgetitem32)
-        __qtablewidgetitem33 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(2, __qtablewidgetitem33)
+        __qtablewidgetitem45 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(0, __qtablewidgetitem45)
+        __qtablewidgetitem46 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(1, __qtablewidgetitem46)
+        __qtablewidgetitem47 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(2, __qtablewidgetitem47)
         if (self.tableWidget_5.rowCount() < 4):
             self.tableWidget_5.setRowCount(4)
-        __qtablewidgetitem34 = QTableWidgetItem()
-        __qtablewidgetitem34.setFont(font4);
-        self.tableWidget_5.setVerticalHeaderItem(0, __qtablewidgetitem34)
-        __qtablewidgetitem35 = QTableWidgetItem()
-        self.tableWidget_5.setItem(0, 0, __qtablewidgetitem35)
-        __qtablewidgetitem36 = QTableWidgetItem()
-        self.tableWidget_5.setItem(0, 1, __qtablewidgetitem36)
-        __qtablewidgetitem37 = QTableWidgetItem()
-        self.tableWidget_5.setItem(0, 2, __qtablewidgetitem37)
+        __qtablewidgetitem48 = QTableWidgetItem()
+        __qtablewidgetitem48.setFont(font4);
+        self.tableWidget_5.setVerticalHeaderItem(0, __qtablewidgetitem48)
+        __qtablewidgetitem49 = QTableWidgetItem()
+        self.tableWidget_5.setItem(0, 0, __qtablewidgetitem49)
+        __qtablewidgetitem50 = QTableWidgetItem()
+        self.tableWidget_5.setItem(0, 1, __qtablewidgetitem50)
+        __qtablewidgetitem51 = QTableWidgetItem()
+        self.tableWidget_5.setItem(0, 2, __qtablewidgetitem51)
         self.tableWidget_5.setObjectName(u"tableWidget_5")
         sizePolicy3.setHeightForWidth(self.tableWidget_5.sizePolicy().hasHeightForWidth())
         self.tableWidget_5.setSizePolicy(sizePolicy3)
@@ -2040,7 +2121,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -2054,6 +2135,7 @@ class Ui_MainWindow(object):
         self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Home", None))
         self.btn_widgets.setText(QCoreApplication.translate("MainWindow", u"Clips", None))
         self.btn_new.setText(QCoreApplication.translate("MainWindow", u"Vods", None))
+        self.btn_download_queue.setText(QCoreApplication.translate("MainWindow", u"DownladQueue", None))
         self.btn_save.setText(QCoreApplication.translate("MainWindow", u"Clips", None))
         self.btn_exit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
         self.toggleLeftBox.setText(QCoreApplication.translate("MainWindow", u"Left Box", None))
@@ -2200,6 +2282,28 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"DONWLOAD", None))
         self.pushButton_15.setText(QCoreApplication.translate("MainWindow", u"Share Link", None))
         self.labelprogress.setText("")
+        self.DownladQueue.setText(QCoreApplication.translate("MainWindow", u"Downlad Queue", None))
+        ___qtablewidgetitem31 = self.download_table.horizontalHeaderItem(0)
+        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"0", None));
+        ___qtablewidgetitem32 = self.download_table.horizontalHeaderItem(1)
+        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"1", None));
+        ___qtablewidgetitem33 = self.download_table.horizontalHeaderItem(2)
+        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"2", None));
+
+        __sortingEnabled2 = self.download_table.isSortingEnabled()
+        self.download_table.setSortingEnabled(False)
+        ___qtablewidgetitem34 = self.download_table.item(0, 0)
+        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"01", None));
+        ___qtablewidgetitem35 = self.download_table.item(0, 1)
+        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"01", None));
+        ___qtablewidgetitem36 = self.download_table.item(0, 2)
+        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"01", None));
+        ___qtablewidgetitem37 = self.download_table.item(0, 3)
+        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"awd", None));
+        ___qtablewidgetitem38 = self.download_table.item(1, 3)
+        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"awd", None));
+        self.download_table.setSortingEnabled(__sortingEnabled2)
+
         self.labelBoxBlenderInstalation_3.setText(QCoreApplication.translate("MainWindow", u"Download Clips", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Load", None))
         self.labelVersion_5.setText(QCoreApplication.translate("MainWindow", u"Channel name", None))
@@ -2207,24 +2311,24 @@ class Ui_MainWindow(object):
         self.lineEdit_3.setPlaceholderText(QCoreApplication.translate("MainWindow", u"You have to be logged in to use the clips feature", None))
         self.lineEdit_4.setText("")
         self.lineEdit_4.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
-        ___qtablewidgetitem31 = self.tableWidget_5.horizontalHeaderItem(0)
-        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"0", None));
-        ___qtablewidgetitem32 = self.tableWidget_5.horizontalHeaderItem(1)
-        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"1", None));
-        ___qtablewidgetitem33 = self.tableWidget_5.horizontalHeaderItem(2)
-        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"2", None));
-        ___qtablewidgetitem34 = self.tableWidget_5.verticalHeaderItem(0)
-        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"New Row", None));
+        ___qtablewidgetitem39 = self.tableWidget_5.horizontalHeaderItem(0)
+        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"0", None));
+        ___qtablewidgetitem40 = self.tableWidget_5.horizontalHeaderItem(1)
+        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"1", None));
+        ___qtablewidgetitem41 = self.tableWidget_5.horizontalHeaderItem(2)
+        ___qtablewidgetitem41.setText(QCoreApplication.translate("MainWindow", u"2", None));
+        ___qtablewidgetitem42 = self.tableWidget_5.verticalHeaderItem(0)
+        ___qtablewidgetitem42.setText(QCoreApplication.translate("MainWindow", u"New Row", None));
 
-        __sortingEnabled2 = self.tableWidget_5.isSortingEnabled()
+        __sortingEnabled3 = self.tableWidget_5.isSortingEnabled()
         self.tableWidget_5.setSortingEnabled(False)
-        ___qtablewidgetitem35 = self.tableWidget_5.item(0, 0)
-        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"Test", None));
-        ___qtablewidgetitem36 = self.tableWidget_5.item(0, 1)
-        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"Text", None));
-        ___qtablewidgetitem37 = self.tableWidget_5.item(0, 2)
-        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"Cell", None));
-        self.tableWidget_5.setSortingEnabled(__sortingEnabled2)
+        ___qtablewidgetitem43 = self.tableWidget_5.item(0, 0)
+        ___qtablewidgetitem43.setText(QCoreApplication.translate("MainWindow", u"Test", None));
+        ___qtablewidgetitem44 = self.tableWidget_5.item(0, 1)
+        ___qtablewidgetitem44.setText(QCoreApplication.translate("MainWindow", u"Text", None));
+        ___qtablewidgetitem45 = self.tableWidget_5.item(0, 2)
+        ___qtablewidgetitem45.setText(QCoreApplication.translate("MainWindow", u"Cell", None));
+        self.tableWidget_5.setSortingEnabled(__sortingEnabled3)
 
         self.labelprogress_2.setText("")
         self.pushButton_8.setText(QCoreApplication.translate("MainWindow", u"DONWLOAD", None))

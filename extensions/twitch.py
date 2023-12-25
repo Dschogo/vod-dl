@@ -15,12 +15,16 @@ from datetime import date, timedelta
 
 CLIENT_ID = "kd1unb4b3q4t58fwlpcbzcbnm76a8fp"
 
+# thumbnails
+
 VIDEO_FIELDS = """
     id
     title
     createdAt
     broadcastType
     lengthSeconds
+    viewCount
+    thumbnailURLs
     game {
         name
     }
@@ -456,6 +460,7 @@ def gql_query(query: str, headers: Dict[str, str] = {}):
 
     if "errors" in response:
         raise GQLError(response["errors"])
+
 
     return response
 

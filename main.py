@@ -28,6 +28,8 @@ import shutil
 import json
 import webbrowser
 import queue
+import requests
+from io import BytesIO
 
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
@@ -65,7 +67,9 @@ class MainWindow(QMainWindow):
                 twitch_token = self.path.split("=")[1].split("&")[0]
                 self.wfile.write(
                     bytes(
-                        "<html><body><h1>You can close this window now</h1></   body></html><script>window.location.href = 'http://localhost:" + str(port) + "'</script>",
+                        "<html><body><h1>You can close this window now</h1></   body></html><script>window.location.href = 'http://localhost:"
+                        + str(port)
+                        + "'</script>",
                         "utf-8",
                     )
                 )
@@ -99,6 +103,7 @@ class MainWindow(QMainWindow):
         widgets = self.ui
         self.videolist = []
         self.download_queue = queue.Queue()
+        self.thumbnail_queue = queue.Queue()
 
         self.settings = QSettings("settings.ini", QSettings.IniFormat)
         self.folder = self.settings.value("folder", os.getcwd())
@@ -139,6 +144,9 @@ class MainWindow(QMainWindow):
         widgets.btn_widgets.clicked.connect(self.buttonClick)
         widgets.btn_new.clicked.connect(self.buttonClick)
         widgets.btn_save.clicked.connect(self.buttonClick)
+        widgets.btn_download_queue.clicked.connect(self.buttonClick)
+        widgets.btn_download_queue.hide()
+
         widgets.pushButton_5.clicked.connect(self.donwload_video_proxy)
 
         widgets.pushButton_2.clicked.connect(self.fetch_videos)
@@ -209,13 +217,46 @@ class MainWindow(QMainWindow):
         # SET HOME PAGE AND SELECT MENU
         # ///////////////////////////////////////////////////////////////
         widgets.stackedWidget.setCurrentWidget(widgets.home)
-        widgets.btn_home.setStyleSheet(UIFunctions.selectMenu(widgets.btn_home.styleSheet()))
+        widgets.btn_home.setStyleSheet(
+            UIFunctions.selectMenu(widgets.btn_home.styleSheet())
+        )
 
         threading.Thread(target=self.download_queue_worker, daemon=True).start()
+        threading.Thread(target=self.thumbnail_queue_worker, daemon=True).start()
 
+    def format_video_length(self, length_seconds):
+        h = str(length_seconds // 3600).zfill(2)
+        m = str((length_seconds - int(h) * 3600) // 60).zfill(2)
+        s = str(length_seconds - int(h) * 3600 - int(m) * 60).zfill(2)
+        return f"{h}:{m}:{s}"
+
+    def populate_table_row(self, vid):
+        return # TODO crashes QBasicTimer::start: QBasicTimer can only be used with threads started with QThread
+        hms_format = self.format_video_length(int(vid["lengthSeconds"]))
+        print("format", hms_format)
+
+        row = 0
+        widgets.download_table.insertRow(row)
+
+        widgets.download_table.setItem(
+            row,
+            1,
+            QTableWidgetItem(f"{vid['createdAt']}\n{hms_format}\n{vid['viewCount']}"),
+        )
+        widgets.download_table.setItem(row, 2, QTableWidgetItem(vid["title"]))
+        widgets.download_table.setRowHeight(row, 120)
+        widgets.download_table.setColumnWidth(0, 213)
+        widgets.download_table.setCellWidget(row, 0, QLabel())
+        print("set pixmap")
+        # widgets.download_table.cellWidget(row, 0).setPixmap(vid["thumbpix"])
+        print("set scaled contents")    
+        
+        
     def set_output(self):
         # filpicker for folder
-        self.folder = QFileDialog.getExistingDirectory(self, "Select Directory", self.folder)
+        self.folder = QFileDialog.getExistingDirectory(
+            self, "Select Directory", self.folder
+        )
 
         # save to settings file
         self.settings.setValue("folder", self.folder)
@@ -227,7 +268,9 @@ class MainWindow(QMainWindow):
 
         # update timedit
         widgets.timeEdit_2.setTime(QTime(0, 0, 0))
-        hours, minutes, seconds = widgets.tableWidget_4.item(row, 1).text().split(":")
+        hours, minutes, seconds = (
+            widgets.tableWidget_4.item(row, 1).text().split("\n")[1].split(":")
+        )
         widgets.timeEdit.setTime(QTime(int(hours), int(minutes), int(seconds)))
 
     def preview_video(self):
@@ -238,7 +281,21 @@ class MainWindow(QMainWindow):
         hours, minutes, seconds = widgets.timeEdit_2.time().toString().split(":")
 
         # open video in browser
-        webbrowser.open(f"https://www.twitch.tv/videos/{vid['id']}?t={hours}h{minutes}m{seconds}s")
+        webbrowser.open(
+            f"https://www.twitch.tv/videos/{vid['id']}?t={hours}h{minutes}m{seconds}s"
+        )
+
+    async def load_thumbnail(self, i):
+        thumb = (
+            self.videolist[i]["thumbnailURLs"][0]
+            .replace("{width}", "320")
+            .replace("{height}", "180")
+        )
+
+        thumb_pic = await self.get_pixmap_from_url_async(thumb)
+
+        widgets.tableWidget_4.cellWidget(i, 0).setPixmap(thumb_pic)
+        print(f"loaded thumbnail {i}")
 
     def fetch_videos(self):
         # demo fill table
@@ -247,23 +304,68 @@ class MainWindow(QMainWindow):
         vids = twitch.get_channel_videos(channel, limit=100, sort="time")["edges"]
         widgets.tableWidget_4.clearContents()
         widgets.tableWidget_4.setRowCount(len(vids))
+        self.thumbnail_queue = queue.Queue()
         for i in range(len(vids)):
             vid = vids[i]["node"]
             self.videolist.append(vid)
 
-            h = str(int(vid["lengthSeconds"]) // 3600).zfill(2)
-            m = str((int(vid["lengthSeconds"]) - int(h) * 3600) // 60).zfill(2)
-            s = str(int(vid["lengthSeconds"]) - int(h) * 3600 - int(m) * 60).zfill(2)
+            hms_format = self.format_video_length(int(vid["lengthSeconds"]))
 
-            widgets.tableWidget_4.setItem(i, 0, QTableWidgetItem(vid["createdAt"]))
-            widgets.tableWidget_4.setItem(i, 1, QTableWidgetItem(f"{h}:{m}:{s}"))
+            # https://static-cdn.jtvnw.net/cf_vods/dgeft87wbj63p/f305f4af8112e23ea4fe_kdrkitten_40102156741_1698483075//thumb/thumb0-{width}x{height}.jpg
+
+            widgets.tableWidget_4.setCellWidget(i, 0, QLabel())
+            widgets.tableWidget_4.setItem(
+                i,
+                1,
+                QTableWidgetItem(
+                    f"{vid['createdAt']}\n{hms_format}\n{vid['viewCount']}"
+                ),
+            )
             widgets.tableWidget_4.setItem(i, 2, QTableWidgetItem(vid["title"]))
+            widgets.tableWidget_4.setRowHeight(i, 120)
+            widgets.tableWidget_4.setColumnWidth(0, 213)  #
+            self.thumbnail_queue.put(i)
+
+    def get_pixmap_from_url(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            image_data = BytesIO(response.content)
+            pixmap = QPixmap()
+            pixmap.loadFromData(image_data.getvalue())
+            return pixmap
+        else:
+            return QPixmap()
+
+    def thumbnail_queue_worker(self):
+        while True:
+            try:
+                if not self.thumbnail_queue.empty():
+                    # get first item
+                    i = self.thumbnail_queue.get()
+                    # load thumbnail
+                    thumb = (
+                        self.videolist[i]["thumbnailURLs"][0]
+                        .replace("{width}", "320")
+                        .replace("{height}", "180")
+                    )
+                    thumb_pic = self.get_pixmap_from_url(thumb)
+                    self.videolist[i]["thumbpix"] = thumb_pic
+                    widgets.tableWidget_4.cellWidget(i, 0).setPixmap(thumb_pic)
+                    widgets.tableWidget_4.cellWidget(i, 0).setScaledContents(True)
+                    # print(f"loaded thumbnail {i}")
+                    self.thumbnail_queue.task_done()
+                else:
+                    time.sleep(1)
+            except Exception as e:
+                print(e)
+                time.sleep(1)
 
     def download_queue_worker(self):
         while True:
             if not self.download_queue.empty():
                 # get first item
                 start_sec, end_sec, vid = self.download_queue.get()
+                self.populate_table_row(vid)
                 self.donwload_video(start_sec, end_sec, vid)
                 # print(f"fake   download video {vid['id']} from {start_sec} to {end_sec}")
                 self.download_queue.task_done()
@@ -277,16 +379,25 @@ class MainWindow(QMainWindow):
         # c.start()
 
         # use a queue to download multiple videos, one after another
-        start_sec = widgets.timeEdit_2.time().hour() * 3600 + widgets.timeEdit_2.time().minute() * 60 + widgets.timeEdit_2.time().second()
-        end_sec = widgets.timeEdit.time().hour() * 3600 + widgets.timeEdit.time().minute() * 60 + widgets.timeEdit.time().second()
+        start_sec = (
+            widgets.timeEdit_2.time().hour() * 3600
+            + widgets.timeEdit_2.time().minute() * 60
+            + widgets.timeEdit_2.time().second()
+        )
+        end_sec = (
+            widgets.timeEdit.time().hour() * 3600
+            + widgets.timeEdit.time().minute() * 60
+            + widgets.timeEdit.time().second()
+        )
         row = widgets.tableWidget_4.currentRow()
         video = self.videolist[row]
 
         # self.download_queue.append((start_sec, end_sec, video))
+        video["thumbpix"] = widgets.tableWidget_4.cellWidget(row, 0).pixmap()
         self.download_queue.put((start_sec, end_sec, video))
-        print(f"Added video to download queue: {video['id']} - {video['title']} from {start_sec} to {end_sec} (queue size: {self.download_queue.qsize()})")
-
-
+        print(
+            f"Added video to download queue: {video['id']} - {video['title']} from {start_sec} to {end_sec} (queue size: {self.download_queue.qsize()})"
+        )
 
     def download_clip_link_proxy(self):
         import threading
@@ -300,13 +411,15 @@ class MainWindow(QMainWindow):
 
     def donwload_video(self, start_sec, end_sec, vid):
         # get selected video
-        
+
         print(f"download video {vid['id']} from {start_sec} to {end_sec}")
-        
 
         print(vid)
         access_token = twitch.get_access_token(vid["id"], twitch_token)
-        args = {"output": "{date}_{id}_{channel_login}_{title_slug}_{start_sec}_{end_sec}.{format}", "format": "mp4"}
+        args = {
+            "output": "{date}_{id}_{channel_login}_{title_slug}_{start_sec}_{end_sec}.{format}",
+            "format": "mp4",
+        }
         target = twitch._video_target_filename(vid, args, start_sec, end_sec)
 
         print("<dim>Fetching playlists...</dim>")
@@ -333,13 +446,24 @@ class MainWindow(QMainWindow):
             f.write(response.text)
 
         def set_progresstxt(text):
-            widgets.labelprogress.setText(text + "  -  " + str(self.download_queue.qsize()) + " in queue")
+            widgets.labelprogress.setText(
+                text + "  -  " + str(self.download_queue.qsize()) + " in queue"
+            )
 
-        print("\nDownloading {} VODs using {} workers to {}".format(len(vod_paths), 20, target_dir))
+        print(
+            "\nDownloading {} VODs using {} workers to {}".format(
+                len(vod_paths), 20, target_dir
+            )
+        )
         sources = [base_uri + path for path in vod_paths]
-        targets = [os.path.join(target_dir, "{:05d}.ts".format(k)) for k, _ in enumerate(vod_paths)]
+        targets = [
+            os.path.join(target_dir, "{:05d}.ts".format(k))
+            for k, _ in enumerate(vod_paths)
+        ]
         # run in background
-        asyncio.run(thttp.download_all(set_progresstxt, sources, targets, 20, rate_limit=None))
+        asyncio.run(
+            thttp.download_all(set_progresstxt, sources, targets, 20, rate_limit=None)
+        )
 
         # Make a modified playlist which references downloaded VODs
         # Keep only the downloaded segments and skip the rest
@@ -367,12 +491,24 @@ class MainWindow(QMainWindow):
         segment_end_sec = int(t[2])
 
         # to timecode 00:00:00:00
-        start = "{:02d}:{:02d}:{:02d}:{:02d}".format(segment_start_sec // 3600, (segment_start_sec % 3600) // 60, segment_start_sec % 60, 0)
-        end = "{:02d}:{:02d}:{:02d}:{:02d}".format(segment_end_sec // 3600, (segment_end_sec % 3600) // 60, segment_end_sec % 60, 0)
+        start = "{:02d}:{:02d}:{:02d}:{:02d}".format(
+            segment_start_sec // 3600,
+            (segment_start_sec % 3600) // 60,
+            segment_start_sec % 60,
+            0,
+        )
+        end = "{:02d}:{:02d}:{:02d}:{:02d}".format(
+            segment_end_sec // 3600,
+            (segment_end_sec % 3600) // 60,
+            segment_end_sec % 60,
+            0,
+        )
 
         print(f"start: {start} end: {end} (of direct segments)")
 
-        twitch._join_vods(playlist_path, os.path.join(self.folder, target), True, vid, start)
+        twitch._join_vods(
+            playlist_path, os.path.join(self.folder, target), True, vid, start
+        )
         # delete temp folder - target_dir two levels up
         shutil.rmtree(os.path.dirname(os.path.dirname(target_dir)))
         set_progresstxt("Done")
@@ -422,14 +558,21 @@ class MainWindow(QMainWindow):
             # url from column 5
             # if row hidden dont
             if not widgets.tableWidget_5.isRowHidden(i.row()):
-                to_download.append(json.loads(widgets.tableWidget_5.item(i.row(), 5).text()))
+                to_download.append(
+                    json.loads(widgets.tableWidget_5.item(i.row(), 5).text())
+                )
 
         for i in range(len(to_download)):
-            widgets.labelprogress_2.setText(f"Downloading clip {i+1}/{len(to_download)}")
+            widgets.labelprogress_2.setText(
+                f"Downloading clip {i+1}/{len(to_download)}"
+            )
             self.download_internal_clip(to_download[i]["url"], widgets.labelprogress_2)
 
     def download_internal_clip(self, clip_url, label):
-        args = {"output": "{date}_{id}_{channel_login}_{title_slug}.{format}", "format": "mp4"}
+        args = {
+            "output": "{date}_{id}_{channel_login}_{title_slug}.{format}",
+            "format": "mp4",
+        }
         slug = clip_url.replace("https://clips.twitch.tv/", "")
 
         clip = twitch.get_clip(slug)
@@ -483,20 +626,36 @@ class MainWindow(QMainWindow):
         channel = widgets.lineEdit_3.text()
         print(f"fetching clips from {channel}")
 
-        clips = twitch.get_clips_filtered(channel_id=channel, after=widgets.dateEdit.date(), before=widgets.dateEdit_2.date(), access_token=twitch_token, client_id=CLIENT_ID)
+        clips = twitch.get_clips_filtered(
+            channel_id=channel,
+            after=widgets.dateEdit.date(),
+            before=widgets.dateEdit_2.date(),
+            access_token=twitch_token,
+            client_id=CLIENT_ID,
+        )
 
         widgets.tableWidget_5.clearContents()
         widgets.tableWidget_5.setRowCount(len(clips))
         # set column names
-        widgets.tableWidget_5.setHorizontalHeaderLabels(["Created", "Creator", "Views", "Duration", "Title"])
+        widgets.tableWidget_5.setHorizontalHeaderLabels(
+            ["Created", "Creator", "Views", "Duration", "Title"]
+        )
         # show header
         widgets.tableWidget_5.horizontalHeader().show()
         for i in range(len(clips)):
             # self.clip_list.append(clips[i])
-            widgets.tableWidget_5.setItem(i, 0, QTableWidgetItem(clips[i]["created_at"]))
-            widgets.tableWidget_5.setItem(i, 1, QTableWidgetItem(clips[i]["creator_name"]))
-            widgets.tableWidget_5.setItem(i, 2, QTableWidgetItem(str(clips[i]["view_count"])))
-            widgets.tableWidget_5.setItem(i, 3, QTableWidgetItem(str(clips[i]["duration"]) + "s"))
+            widgets.tableWidget_5.setItem(
+                i, 0, QTableWidgetItem(clips[i]["created_at"])
+            )
+            widgets.tableWidget_5.setItem(
+                i, 1, QTableWidgetItem(clips[i]["creator_name"])
+            )
+            widgets.tableWidget_5.setItem(
+                i, 2, QTableWidgetItem(str(clips[i]["view_count"]))
+            )
+            widgets.tableWidget_5.setItem(
+                i, 3, QTableWidgetItem(str(clips[i]["duration"]) + "s")
+            )
             widgets.tableWidget_5.setItem(i, 4, QTableWidgetItem(clips[i]["title"]))
             widgets.tableWidget_5.setItem(i, 5, QTableWidgetItem(json.dumps(clips[i])))
 
@@ -530,6 +689,12 @@ class MainWindow(QMainWindow):
             widgets.stackedWidget.setCurrentWidget(widgets.vods)  # SET PAGE
             UIFunctions.resetStyle(self, btnName)  # RESET ANOTHERS BUTTONS SELECTED
             btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  # SELECT MENU
+
+        # SHOW donwload PAGE
+        if btnName == "btn_download_queue":
+            widgets.stackedWidget.setCurrentWidget(widgets.page)
+            UIFunctions.resetStyle(self, btnName)
+            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
 
         # if btnName == "btn_save":
         #     widgets.stackedWidget.setCurrentWidget(widgets.widgets)
